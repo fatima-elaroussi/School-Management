@@ -1,0 +1,102 @@
+:host {
+  display: block;
+}
+
+$bg-dark: #071024;
+$bg-elev: rgba(255, 255, 255, 0.03);
+$accent: #5eead4;
+
+.app-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 1100;
+  height: 64px;
+  padding: 0 16px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  display: flex;
+  align-items: center;
+}
+
+.toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .brand {
+    font-weight: 700;
+    font-size: 16px;
+    color: #eaf6f0;
+  }
+}
+
+.menu-btn mat-icon {
+  color: #9fb3c8;
+}
+
+.toolbar-search {
+  flex: 0 0 420px;
+  display: flex;
+  align-items: center;
+
+  &.mobile {
+    display: none;
+  }
+
+  .search-field {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+  }
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .avatar-btn {
+    padding: 0;
+  }
+
+  .avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(180deg, $accent, darken($accent, 8%));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #062022;
+    font-weight: 700;
+  }
+}
+
+@media (max-width: 900px) {
+  .toolbar-search {
+    display: none;
+  }
+}
+
+/* Theme helpers */
+:root.theme-dark {
+  --toolbar-bg: #071024;
+}
+
+:root.theme-light {
+  --toolbar-bg: #ffffff;
+}
+
+/* small interactions */
+button.mat-icon-button {
+  transition:
+    transform 140ms ease,
+    background 140ms ease;
+}
+button.mat-icon-button:hover {
+  transform: translateY(-2px);
+}

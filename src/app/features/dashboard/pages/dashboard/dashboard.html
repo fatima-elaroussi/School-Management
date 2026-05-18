@@ -1,0 +1,86 @@
+<div class="dashboard-root">
+  <section class="stats-grid">
+    <ng-container *ngIf="!loading(); else statsLoading">
+      <mat-card class="stat-card" *ngFor="let s of stats()">
+        <div class="stat-icon">
+          <mat-icon>{{ s.icon }}</mat-icon>
+        </div>
+        <div class="stat-body">
+          <div class="stat-value">{{ s.prefix || '' }}{{ s.value | number }}</div>
+          <div class="stat-title">{{ s.title }}</div>
+        </div>
+      </mat-card>
+    </ng-container>
+
+    <ng-template #statsLoading>
+      <mat-card class="stat-card skeleton" *ngFor="let i of [1, 2, 3, 4, 5]">
+        <div class="stat-icon"></div>
+        <div class="stat-body">
+          <div class="stat-value placeholder"></div>
+          <div class="stat-title placeholder short"></div>
+        </div>
+      </mat-card>
+    </ng-template>
+  </section>
+
+  <section class="main-grid">
+    <mat-card class="chart-card">
+      <div class="card-header">
+        <h3>Analytics</h3>
+        <button mat-icon-button aria-label="Refresh">
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </div>
+      <div class="chart-placeholder">
+        <div class="chart-label">(Chart placeholder)</div>
+      </div>
+    </mat-card>
+
+    <mat-card class="payments-card">
+      <div class="card-header">
+        <h3>Recent Payments</h3>
+      </div>
+
+      <div *ngIf="loading(); else paymentsTable" class="table-loading">
+        <mat-progress-spinner diameter="36" mode="indeterminate"></mat-progress-spinner>
+      </div>
+
+      <ng-template #paymentsTable>
+        <table class="payments-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Student</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of recentPayments()">
+              <td>{{ p.id }}</td>
+              <td>{{ p.student }}</td>
+              <td>{{ p.amount | currency: 'EUR' }}</td>
+              <td>
+                <span class="status {{ p.status | lowercase }}">{{ p.status }}</span>
+              </td>
+              <td>{{ p.date }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </ng-template>
+    </mat-card>
+
+    <mat-card class="classes-card">
+      <div class="card-header">
+        <h3>Aujourd'hui</h3>
+      </div>
+      <mat-list>
+        <mat-list-item *ngFor="let c of todaysClasses()">
+          <div matLine class="class-time">{{ c.time }}</div>
+          <div matLine class="class-info">{{ c.class }} — {{ c.room }} — {{ c.teacher }}</div>
+        </mat-list-item>
+      </mat-list>
+    </mat-card>
+  </section>
+</div>

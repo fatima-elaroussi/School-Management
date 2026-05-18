@@ -1,0 +1,51 @@
+<mat-toolbar class="app-toolbar" color="primary">
+  <div class="toolbar-left">
+    <button mat-icon-button class="menu-btn" aria-label="Open sidebar">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <div class="brand">School Admin</div>
+  </div>
+
+  <div class="toolbar-search" [class.mobile]="isMobile()">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput placeholder="Rechercher..." [(ngModel)]="searchQuery" />
+      <button mat-icon-button matSuffix *ngIf="searchQuery()" (click)="clearSearch()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+  </div>
+
+  <span class="spacer"></span>
+
+  <div class="toolbar-actions">
+    <button
+      mat-icon-button
+      matBadge="{{ unreadCount }}"
+      matBadgeColor="warn"
+      aria-label="Notifications"
+      [matBadgeHidden]="unreadCount === 0"
+    >
+      <mat-icon>notifications</mat-icon>
+    </button>
+
+    <button mat-icon-button (click)="toggleTheme()" matTooltip="Toggle theme">
+      <mat-icon>{{ isDark() ? 'dark_mode' : 'light_mode' }}</mat-icon>
+    </button>
+
+    <button
+      mat-icon-button
+      [matMenuTriggerFor]="profileMenu"
+      class="avatar-btn"
+      aria-label="Profile"
+    >
+      <div class="avatar">A</div>
+    </button>
+
+    <mat-menu #profileMenu="matMenu">
+      <button mat-menu-item routerLink="/profile"><mat-icon>person</mat-icon>Profil</button>
+      <button mat-menu-item routerLink="/settings"><mat-icon>settings</mat-icon>Paramètres</button>
+      <button mat-menu-item><mat-icon>logout</mat-icon>Se déconnecter</button>
+    </mat-menu>
+  </div>
+</mat-toolbar>

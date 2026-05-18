@@ -1,0 +1,48 @@
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav
+    #drawer
+    class="sidenav"
+    [class.collapsed]="collapsed()"
+    [mode]="isHandset() ? 'over' : 'side'"
+    [opened]="!isHandset() && !collapsed()"
+    [fixedInViewport]="isHandset()"
+  >
+    <div class="sidenav-header">
+      <button
+        mat-icon-button
+        class="toggle-btn"
+        (click)="toggleCollapsed()"
+        matTooltip="Toggle sidebar"
+      >
+        <mat-icon>{{ collapsed() ? 'chevron_right' : 'chevron_left' }}</mat-icon>
+      </button>
+      <div class="brand" *ngIf="!collapsed()">School Admin</div>
+      <button mat-icon-button class="mobile-close" (click)="drawer.close()" *ngIf="isHandset()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <mat-nav-list class="nav-list">
+      <a
+        mat-list-item
+        *ngFor="let item of navItems"
+        [routerLink]="item.route"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        (click)="isHandset() ? drawer.close() : null"
+        class="nav-item"
+      >
+        <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
+        <span class="nav-label" *ngIf="!collapsed()">{{ item.label }}</span>
+      </a>
+    </mat-nav-list>
+
+    <div class="sidenav-footer" *ngIf="!collapsed()">
+      <small>© School Management</small>
+    </div>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="sidenav-content">
+    <ng-content></ng-content>
+  </mat-sidenav-content>
+</mat-sidenav-container>
