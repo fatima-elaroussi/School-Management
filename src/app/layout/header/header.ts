@@ -1,9 +1,10 @@
-import { Component, OnDestroy, signal } from '@angular/core';
+import { Component, OnDestroy, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Subscription } from 'rxjs';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../core/services/auth';
 
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
@@ -36,6 +37,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
   styleUrls: ['./header.scss'],
 })
 export class HeaderComponent implements OnDestroy {
+  private router = inject(Router);
+  private authService = inject(AuthService);
+
   searchQuery = signal('');
   isDark = signal(localStorage.getItem('theme') === 'dark');
   isMobile = signal(false);
@@ -48,6 +52,23 @@ export class HeaderComponent implements OnDestroy {
 
   get unreadCount() {
     return this.notifications().length;
+  }
+
+  userInitial = computed(() => {
+    const user = this.authService.currentUser();
+    return (
+      user?.fullName?.trim().charAt(0).toUpperCase() ||
+      user?.email?.trim().charAt(0).toUpperCase() ||
+      'A'
+    );
+  });
+
+  userName = computed(() => this.authService.currentUser()?.fullName ?? 'Utilisateur');
+  userRole = computed(() => this.authService.currentUser()?.role ?? 'Invité');
+
+  confirmLogout() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 
   constructor(private breakpoint: BreakpointObserver) {

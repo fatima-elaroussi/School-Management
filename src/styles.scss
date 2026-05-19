@@ -1,7 +1,5 @@
-// Global theme and utilities for the dashboard
 @use '@angular/material' as mat;
 
-// Keep Angular Material theming hook (keeps compatibility)
 html {
   height: 100%;
   @include mat.theme(
@@ -13,72 +11,132 @@ html {
 }
 
 /* -----------------------------
-   CSS Variable Theme (Dark + Light)
+   Import fonts
    ----------------------------- */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+/* -----------------------------
+   CSS Variable Theme
+   ----------------------------- */
+// :root {
+//   --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+//   --font-mono: 'DM Mono', ui-monospace, monospace;
+
+//   /* Dark theme (default) */
+//   --bg:        #060e1a;
+//   --bg-2:      #07111f;
+//   --surface:   #0c1829;
+//   --surface-2: #111f30;
+//   --border:    rgba(255, 255, 255, 0.06);
+//   --card:      rgba(255, 255, 255, 0.03);
+//   --muted:     #7a94ae;
+//   --text:      #ddeeff;
+//   --text-2:    #a8bfd4;
+//   --primary:   #4ecdbb;
+//   --primary-2: #38b2a0;
+//   --accent:    #5b9cf6;
+//   --danger:    #f87171;
+//   --warning:   #fbbf24;
+//   --success:   #4ecdbb;
+
+//   /* Shadows */
+//   --shadow-sm:  0 2px 8px rgba(1, 4, 14, 0.5);
+//   --shadow-md:  0 6px 20px rgba(1, 4, 14, 0.55);
+//   --shadow-lg:  0 16px 40px rgba(1, 4, 14, 0.6);
+
+//   /* Spacing */
+//   --space-1: 8px;
+//   --space-2: 12px;
+//   --space-3: 16px;
+//   --space-4: 24px;
+//   --space-5: 32px;
+//   --space-6: 48px;
+
+//   --radius-sm: 8px;
+//   --radius-md: 12px;
+//   --radius-lg: 16px;
+//   --radius-xl: 20px;
+
+//   --ease: cubic-bezier(0.22, 1, 0.36, 1);
+//   --transition: 180ms var(--ease);
+
+//   color-scheme: dark;
+// }
 :root {
-  --font-sans: 'Inter', 'Roboto', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace;
+  --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-mono: 'DM Mono', ui-monospace, monospace;
 
-  /* Core palette */
-  --bg: #061221;
-  --surface: #071023;
-  --card: rgba(255, 255, 255, 0.02);
-  --muted: #9fb3c8;
-  --text: #e6f0fb;
-  --primary: #5eead4;
-  --accent: #60a5fa;
-  --danger: #ff7b7b;
+  /* Light theme default */
+  --bg:        #f0f4f8;
+  --bg-2:      #e8eef5;
+  --surface:   #ffffff;
+  --surface-2: #f6f9fc;
+  --border:    rgba(30, 60, 100, 0.1);
+  --card:      #ffffff;
+  --muted:     #7a8fa3;
+  --text:      #0d1f35;
+  --text-2:    #3d5470;
+  --primary:   #0d7a68;
+  --primary-2: #0a6658;
+  --accent:    #2563eb;
+  --danger:    #dc2626;
+  --warning:   #d97706;
+  --success:   #059669;
 
-  /* Spacing scale */
-  --space-0: 4px;
-  --space-1: 8px;
-  --space-2: 12px;
-  --space-3: 16px;
-  --space-4: 24px;
-  --space-5: 32px;
+  --shadow-sm:  0 2px 8px rgba(30, 60, 100, 0.07);
+  --shadow-md:  0 6px 20px rgba(30, 60, 100, 0.1);
+  --shadow-lg:  0 16px 40px rgba(30, 60, 100, 0.12);
 
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-
-  /* Shadows */
-  --shadow-soft: 0 8px 20px rgba(2, 6, 23, 0.55);
-  --shadow-subtle: 0 4px 12px rgba(2, 6, 23, 0.45);
-
-  /* Transitions */
-  --ease: cubic-bezier(0.2, 0.9, 0.2, 1);
-  --transition-fast: 160ms var(--ease);
+  color-scheme: light;
 }
-
-/* Light theme overrides */
+/* Light theme */
 body.theme-light,
 :root.theme-light {
-  --bg: #f6f8fb;
-  --surface: #ffffff;
-  --card: rgba(2, 6, 23, 0.03);
-  --muted: #6b7280;
-  --text: #0b1220;
-  --primary: #2563eb;
-  --accent: #06b6d4;
-  --danger: #ef4444;
+  --bg:        #f0f4f8;
+  --bg-2:      #e8eef5;
+  --surface:   #ffffff;
+  --surface-2: #f6f9fc;
+  --border:    rgba(30, 60, 100, 0.1);
+  --card:      #ffffff;
+  --muted:     #7a8fa3;
+  --text:      #0d1f35;
+  --text-2:    #3d5470;
+  --primary:   #0d7a68;
+  --primary-2: #0a6658;
+  --accent:    #2563eb;
+  --danger:    #dc2626;
+  --warning:   #d97706;
+  --success:   #059669;
+
+  --shadow-sm:  0 2px 8px rgba(30, 60, 100, 0.07);
+  --shadow-md:  0 6px 20px rgba(30, 60, 100, 0.1);
+  --shadow-lg:  0 16px 40px rgba(30, 60, 100, 0.12);
+
   color-scheme: light;
 }
 
-/* Dark theme overrides */
+/* Dark theme */
 body.theme-dark,
 :root.theme-dark {
-  --bg: #061221;
-  --surface: #071023;
-  --card: rgba(255, 255, 255, 0.02);
-  --muted: #9fb3c8;
-  --text: #e6f0fb;
-  --primary: #5eead4;
-  --accent: #60a5fa;
-  --danger: #ff7b7b;
+  --bg:        #060e1a;
+  --bg-2:      #07111f;
+  --surface:   #0c1829;
+  --surface-2: #111f30;
+  --border:    rgba(255, 255, 255, 0.06);
+  --card:      rgba(255, 255, 255, 0.03);
+  --muted:     #7a94ae;
+  --text:      #ddeeff;
+  --text-2:    #a8bfd4;
+  --primary:   #4ecdbb;
+  --primary-2: #38b2a0;
+  --accent:    #5b9cf6;
+  --danger:    #f87171;
+  --warning:   #fbbf24;
+  --success:   #4ecdbb;
   color-scheme: dark;
 }
 
-/* Map some Material system variables for compat */
+/* Material compat */
 :root {
   --mat-sys-surface: var(--surface);
   --mat-sys-on-surface: var(--text);
@@ -86,136 +144,42 @@ body.theme-dark,
 }
 
 /* -----------------------------
-   Base typography & layout
+   Base
    ----------------------------- */
-* {
-  box-sizing: border-box;
-}
-html,
-body {
-  height: 100%;
-}
+* { box-sizing: border-box; }
+
+html, body { height: 100%; }
+
 body {
   margin: 0;
   font-family: var(--font-sans);
+  font-size: 14px;
   color: var(--text);
-  background: linear-gradient(180deg, var(--bg), #020817);
+  background: var(--bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  transition:
-    background var(--transition-fast),
-    color var(--transition-fast);
+  transition: background var(--transition), color var(--transition);
 }
 
-/* Container helpers */
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 var(--space-3);
-}
-.full-bleed {
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
-}
-
-/* Spacing utilities */
-.p-1 {
-  padding: var(--space-1) !important;
-}
-.p-2 {
-  padding: var(--space-2) !important;
-}
-.p-3 {
-  padding: var(--space-3) !important;
-}
-.py-2 {
-  padding-top: var(--space-2);
-  padding-bottom: var(--space-2);
-}
-.px-3 {
-  padding-left: var(--space-3);
-  padding-right: var(--space-3);
-}
-
-/* Rounded + shadows */
-.rounded {
-  border-radius: var(--radius-md);
-}
-.shadow-soft {
-  box-shadow: var(--shadow-soft);
-}
-.shadow-subtle {
-  box-shadow: var(--shadow-subtle);
-}
-
-/* Card base style */
-.card {
-  background: var(--card);
-  border-radius: var(--radius-md);
-  padding: var(--space-3);
-  transition:
-    box-shadow var(--transition-fast),
-    transform var(--transition-fast);
-}
-
-/* Smooth hover interactions */
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-soft);
-}
-
-/* Scrollbar styling */
-*::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-*::-webkit-scrollbar-track {
-  background: transparent;
-}
+/* Scrollbar */
+*::-webkit-scrollbar { width: 6px; height: 6px; }
+*::-webkit-scrollbar-track { background: transparent; }
 *::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--border);
   border-radius: 8px;
 }
-body.theme-light *::-webkit-scrollbar-thumb {
-  background: rgba(2, 6, 23, 0.08);
-}
 
-/* Responsive utilities */
-@media (max-width: 900px) {
-  .hide-sm {
-    display: none !important;
-  }
-  .show-sm {
-    display: block !important;
-  }
-}
-@media (min-width: 901px) {
-  .hide-md-up {
-    display: none !important;
-  }
-}
-
-/* Small helpers */
-.muted {
-  color: var(--muted);
-}
-.accent {
-  color: var(--primary);
-}
-.muted-bg {
-  background: rgba(255, 255, 255, 0.02);
-}
-
-/* Utility for smooth transitions */
-.smooth {
-  transition: all var(--transition-fast);
-}
-
-/* Accessibility focus styles */
-:focus {
-  outline: 2px solid rgba(var(--primary), 0.12);
+/* Focus */
+:focus-visible {
+  outline: 2px solid var(--primary);
   outline-offset: 2px;
 }
 
-/* End of global styles */
+/* Utilities */
+.muted  { color: var(--muted) !important; }
+.accent { color: var(--primary) !important; }
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 var(--space-3);
+}

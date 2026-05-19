@@ -39,13 +39,26 @@
       class="avatar-btn"
       aria-label="Profile"
     >
-      <div class="avatar">A</div>
+      <div class="avatar">{{ userInitial() }}</div>
     </button>
 
     <mat-menu #profileMenu="matMenu">
       <button mat-menu-item routerLink="/profile"><mat-icon>person</mat-icon>Profil</button>
       <button mat-menu-item routerLink="/settings"><mat-icon>settings</mat-icon>Paramètres</button>
-      <button mat-menu-item><mat-icon>logout</mat-icon>Se déconnecter</button>
+      <button mat-menu-item [matMenuTriggerFor]="logoutMenu">
+        <mat-icon>logout</mat-icon>Se déconnecter
+      </button>
+    </mat-menu>
+
+    <mat-menu #logoutMenu="matMenu" class="logout-menu">
+      <div class="logout-confirmation">
+        <div class="logout-title">Confirmer la déconnexion</div>
+        <div class="logout-meta">Vous serez redirigé vers la page de connexion.</div>
+        <button mat-menu-item color="warn" (click)="confirmLogout()">
+          <mat-icon>logout</mat-icon>Déconnexion
+        </button>
+        <button mat-menu-item>Annuler</button>
+      </div>
     </mat-menu>
   </div>
 </mat-toolbar>

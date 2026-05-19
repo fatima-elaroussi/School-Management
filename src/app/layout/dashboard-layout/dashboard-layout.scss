@@ -1,27 +1,21 @@
 .content {
-  padding: 24px 32px;
+  padding: 28px 32px;
   min-height: calc(100vh - 64px);
   box-sizing: border-box;
-  background: linear-gradient(180deg, rgba(6, 18, 33, 0.02), rgba(6, 18, 33, 0));
+  background: var(--bg); /* ← utilise la variable, jamais hardcodé */
+  transition: background var(--transition, 180ms ease);
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
 }
 
 @media (max-width: 900px) {
-  .content {
-    padding: 16px;
-  }
+  .content { padding: 16px; }
 }
 
-/* ensure router-outlet children can scroll */
 :host ::ng-deep .sidenav-content {
   display: flex;
   flex-direction: column;
-}
-
-:host ::ng-deep .sidenav-content > * {
-  flex: 0 0 auto;
 }
