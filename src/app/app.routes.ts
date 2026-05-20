@@ -25,6 +25,12 @@ export const routes: Routes = [
             (c) => c.DashboardComponent,
           ),
       },
+      {
+        path: 'students',
+        loadComponent: () =>
+          import('./features/students/pages/students-list/students-list')
+            .then(c => c.StudentsList)
+      }
     ],
   },
 ];

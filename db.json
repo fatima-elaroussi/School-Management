@@ -1,22 +1,264 @@
 {
-    "users": [
-        {
-          "id": 1,
-          "email": "admin@test.com",
-          "password": "123456",
-          "role": "admin",
-          "fullName": "Administrateur"
-        },
-        {
-          "id": 2,
-          "email": "assistante@test.com",
-          "password": "123456",
-          "role": "assistante",
-          "fullName": "Assistante"
-        }
+  "users": [
+    {
+      "id": "1",
+      "email": "admin@test.com",
+      "password": "123456",
+      "role": "admin",
+      "fullName": "Administrateur"
+    },
+    {
+      "id": "2",
+      "email": "assistante@test.com",
+      "password": "123456",
+      "role": "assistante",
+      "fullName": "Assistante"
+    }
+  ],
+  "students": [
+    {
+      "id": "1",
+      "fullName": "Sara El Amrani",
+      "phone": "0611111111",
+      "parentPhone": "0622222222",
+      "address": "Salé",
+      "schoolLevel": "2ème année bac",
+      "subjects": [
+        "Mathématiques",
+        "Physique"
       ],
-    "students": [],
-    "teachers": [],
-    "groups": [],
-    "payments": []
-  }
+      "groups": [
+        "Math Bac"
+      ],
+      "registrationDate": "2026-05-01",
+      "monthlyPayment": 500,
+      "paymentStatus": "payé",
+      "notes": "Très bonne étudiante",
+      "attendanceRate": 95
+    },
+    {
+      "id": "2",
+      "fullName": "Youssef Benjelloun",
+      "phone": "0611111112",
+      "parentPhone": "0622222223",
+      "address": "Rabat",
+      "schoolLevel": "1ère année bac",
+      "subjects": [
+        "Français",
+        "Histoire"
+      ],
+      "groups": [
+        "Français Bac"
+      ],
+      "registrationDate": "2026-05-02",
+      "monthlyPayment": 450,
+      "paymentStatus": "en attente",
+      "notes": "",
+      "attendanceRate": 90
+    },
+    {
+      "id": "3",
+      "fullName": "Laila El Fassi",
+      "phone": "0611111113",
+      "parentPhone": "0622222224",
+      "address": "Casablanca",
+      "schoolLevel": "Terminale bac",
+      "subjects": [
+        "Mathématiques",
+        "Informatique"
+      ],
+      "groups": [
+        "Math Terminale"
+      ],
+      "registrationDate": "2026-05-03",
+      "monthlyPayment": 550,
+      "paymentStatus": "payé",
+      "notes": "",
+      "attendanceRate": 92
+    },
+    {
+      "id": "4",
+      "fullName": "Adam El Idrissi",
+      "phone": "0611111114",
+      "parentPhone": "0622222225",
+      "address": "Fès",
+      "schoolLevel": "2ème année bac",
+      "subjects": [
+        "Physique",
+        "Chimie"
+      ],
+      "groups": [
+        "Physique Bac"
+      ],
+      "registrationDate": "2026-05-04",
+      "monthlyPayment": 500,
+      "paymentStatus": "en attente",
+      "notes": "",
+      "attendanceRate": 88
+    },
+    {
+      "id": "5",
+      "fullName": "Nora El Amrani",
+      "phone": "0611111115",
+      "parentPhone": "0622222226",
+      "address": "Marrakech",
+      "schoolLevel": "1ère année bac",
+      "subjects": [
+        "Français",
+        "Philosophie"
+      ],
+      "groups": [
+        "Français Bac"
+      ],
+      "registrationDate": "2026-05-05",
+      "monthlyPayment": 450,
+      "paymentStatus": "payé",
+      "notes": "",
+      "attendanceRate": 94
+    },
+    {
+      "id": "6",
+      "fullName": "Omar El Fassi",
+      "phone": "0611111116",
+      "parentPhone": "0622222227",
+      "address": "Agadir",
+      "schoolLevel": "Terminale bac",
+      "subjects": [
+        "Mathématiques",
+        "Informatique"
+      ],
+      "groups": [
+        "Math Terminale"
+      ],
+      "registrationDate": "2026-05-06",
+      "monthlyPayment": 550,
+      "paymentStatus": "en attente",
+      "notes": "",
+      "attendanceRate": 90
+    },
+    {
+      "id": "7",
+      "fullName": "Sara El Idrissi",
+      "phone": "0611111117",
+      "parentPhone": "0622222228",
+      "address": "Rabat",
+      "schoolLevel": "2ème année bac",
+      "subjects": [
+        "Physique",
+        "Chimie"
+      ],
+      "groups": [
+        "Physique Bac"
+      ],
+      "registrationDate": "2026-05-07",
+      "monthlyPayment": 500,
+      "paymentStatus": "payé",
+      "notes": "",
+      "attendanceRate": 91
+    },
+    {
+      "id": "8",
+      "fullName": "Youssef El Amrani",
+      "phone": "0611111118",
+      "parentPhone": "0622222229",
+      "address": "Salé",
+      "schoolLevel": "1ère année bac",
+      "subjects": [
+        "Français",
+        "Histoire"
+      ],
+      "groups": [
+        "Français Bac"
+      ],
+      "registrationDate": "2026-05-08",
+      "monthlyPayment": 450,
+      "paymentStatus": "en attente",
+      "notes": "",
+      "attendanceRate": 89
+    },
+    {
+      "id": "9",
+      "fullName": "Laila El Idrissi",
+      "phone": "0611111119",
+      "parentPhone": "0622222230",
+      "address": "Casablanca",
+      "schoolLevel": "Terminale bac",
+      "subjects": [
+        "Mathématiques",
+        "Informatique"
+      ],
+      "groups": [
+        "Math Terminale"
+      ],
+      "registrationDate": "2026-05-09",
+      "monthlyPayment": 550,
+      "paymentStatus": "payé",
+      "notes": "",
+      "attendanceRate": 93
+    },
+    {
+      "id": "10",
+      "fullName": "Adam El Amrani",
+      "phone": "0611111120",
+      "parentPhone": "0622222231",
+      "address": "Fès",
+      "schoolLevel": "2ème année bac",
+      "subjects": [
+        "Physique",
+        "Chimie"
+      ],
+      "groups": [
+        "Physique Bac"
+      ],
+      "registrationDate": "2026-05-10",
+      "monthlyPayment": 500,
+      "paymentStatus": "",
+      "notes": "",
+      "attendanceRate": 87
+    },
+    {
+      "fullName": "fatima",
+      "phone": "17842487",
+      "parentPhone": "0409839893",
+      "address": "sale",
+      "schoolLevel": "2 Bac",
+      "subjects": [
+        "math"
+      ],
+      "groups": [
+        "math"
+      ],
+      "registrationDate": "2026-05-20",
+      "monthlyPayment": 450,
+      "paymentStatus": "payé",
+      "notes": "",
+      "photo": "",
+      "attendanceRate": 0,
+      "id": "VFJhifgrDd8"
+    },
+    {
+      "fullName": "KHADIJA",
+      "phone": "12345678",
+      "parentPhone": "123456789",
+      "address": "SALE",
+      "schoolLevel": "BAC",
+      "subjects": [
+        "MATH"
+      ],
+      "groups": [
+        "BACA"
+      ],
+      "registrationDate": "2026-05-20",
+      "monthlyPayment": 600,
+      "paymentStatus": "en retard",
+      "notes": "",
+      "photo": "",
+      "attendanceRate": 0,
+      "id": "MZ0liBxgdrc"
+    }
+  ],
+  "teachers": [],
+  "groups": [],
+  "payments": [],
+  "$schema": "./node_modules/json-server/schema.json"
+}

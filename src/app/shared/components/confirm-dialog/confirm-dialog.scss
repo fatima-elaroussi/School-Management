@@ -1,0 +1,18 @@
+.confirm-shell {
+  padding: 24px;
+  max-width: 420px;
+}
+.confirm-header {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.confirm-body {
+  margin-top: 12px;
+}
+.confirm-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 18px;
+}

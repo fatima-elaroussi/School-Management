@@ -1,0 +1,138 @@
+<form class="dialog-shell" [formGroup]="form" (ngSubmit)="save()" novalidate>
+  <div class="dialog-header">
+    <div>
+      <p class="eyebrow">Student information</p>
+      <h2>{{ data?.student ? 'Edit student' : 'Add student' }}</h2>
+    </div>
+    <button mat-icon-button type="button" aria-label="Close dialog" (click)="cancel()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="dialog-content">
+    <div class="photo-panel">
+      <div class="photo-preview" [class.empty]="!hasPhoto">
+        <ng-container *ngIf="hasPhoto; else placeholder">
+          <img [src]="imagePreview()" alt="Student avatar preview" />
+        </ng-container>
+        <ng-template #placeholder>
+          <div class="photo-placeholder">
+            <mat-icon>photo_camera</mat-icon>
+            <span>Upload photo</span>
+          </div>
+        </ng-template>
+      </div>
+      <label class="upload-button">
+        <input type="file" accept="image/*" (change)="onImageChange($event)" />
+        <span>Choose image</span>
+      </label>
+    </div>
+
+    <div class="fields-grid">
+      <mat-form-field appearance="fill">
+        <mat-label>Full name</mat-label>
+        <input matInput formControlName="fullName" placeholder="Student full name" />
+        <mat-error *ngIf="controls.fullName.invalid && controls.fullName.touched">
+          Full name is required and must be at least 3 characters.
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Phone</mat-label>
+        <input matInput formControlName="phone" placeholder="0612345678" />
+        <mat-error *ngIf="controls.phone.invalid && controls.phone.touched">
+          Phone is required and must be 8–20 digits and may include spaces, dashes, or +.
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Parent phone</mat-label>
+        <input matInput formControlName="parentPhone" placeholder="0623456789" />
+        <mat-error *ngIf="controls.parentPhone.invalid && controls.parentPhone.touched">
+          Parent phone is required and must be 8–20 digits and may include spaces, dashes, or +.
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="span-full">
+        <mat-label>Address</mat-label>
+        <input matInput formControlName="address" placeholder="City / street" />
+        <mat-error *ngIf="controls.address.invalid && controls.address.touched">
+          Address is required.
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>School level</mat-label>
+        <input matInput formControlName="schoolLevel" placeholder="2ème année bac" />
+        <mat-error *ngIf="controls.schoolLevel.invalid && controls.schoolLevel.touched">
+          School level is required.
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Subjects</mat-label>
+        <input matInput formControlName="subjects" placeholder="Mathématiques, Physique" />
+        <mat-hint>Separate values with commas</mat-hint>
+        <mat-error *ngIf="controls.subjects.invalid && controls.subjects.touched">
+          At least one subject is required.
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Groups</mat-label>
+        <input matInput formControlName="groups" placeholder="Math Bac, Physique Bac" />
+        <mat-hint>Separate values with commas</mat-hint>
+        <mat-error *ngIf="controls.groups.invalid && controls.groups.touched">
+          At least one group is required.
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Monthly payment</mat-label>
+        <input matInput type="number" formControlName="monthlyPayment" placeholder="500" />
+        <mat-error *ngIf="controls.monthlyPayment.invalid && controls.monthlyPayment.touched">
+          Monthly payment is required and must be greater than zero.
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Payment status</mat-label>
+        <mat-select formControlName="paymentStatus">
+          <mat-option *ngFor="let option of paymentStatusOptions" [value]="option.value">
+            {{ option.label }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="controls.paymentStatus.invalid && controls.paymentStatus.touched">
+          Payment status is required.
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="span-full">
+        <mat-label>Notes</mat-label>
+        <textarea matInput formControlName="notes" rows="4" placeholder="Extra remarks"></textarea>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <div class="dialog-actions">
+    <button mat-button type="button" (click)="cancel()">Cancel</button>
+    <button
+      mat-flat-button
+      color="primary"
+      type="button"
+      (click)="save()"
+      [disabled]="saveLoading()"
+      aria-busy="{{ saveLoading() }}"
+    >
+      <mat-progress-spinner
+        *ngIf="saveLoading()"
+        diameter="18"
+        mode="indeterminate"
+        class="button-spinner"
+      >
+      </mat-progress-spinner>
+      <span *ngIf="!saveLoading()">Save student</span>
+      <span *ngIf="saveLoading()">Saving...</span>
+    </button>
+  </div>
+</form>
