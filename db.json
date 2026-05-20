@@ -255,9 +255,70 @@
       "photo": "",
       "attendanceRate": 0,
       "id": "MZ0liBxgdrc"
+    },
+    {
+      "fullName": "test",
+      "phone": "1234567867",
+      "parentPhone": "1234567899",
+      "address": "sale",
+      "schoolLevel": "2bac",
+      "subjects": [
+        "math"
+      ],
+      "groups": [
+        "2BAC"
+      ],
+      "registrationDate": "2026-05-20",
+      "monthlyPayment": 650,
+      "paymentStatus": "en retard",
+      "notes": "",
+      "photo": "",
+      "attendanceRate": 0,
+      "id": "5cVbhKy0drw"
     }
   ],
-  "teachers": [],
+  "teachers": [
+    {
+      "id": 1,
+      "fullName": "Ahmed Benali",
+      "email": "ahmed@test.com",
+      "phone": "0612345678",
+      "subjects": ["Mathématiques"],
+      "schoolLevels": ["2ème année bac"],
+      "salary": 4500,
+      "groups": ["Math Bac 1"],
+      "hireDate": "2026-01-10",
+      "paymentStatus": "payé",
+      "notes": "Excellent professeur"
+    }
+    ,
+    {
+      "id": 2,
+      "fullName": "Sara El Amrani",
+      "email": "sara@test.com",
+      "phone": "0612345679",
+      "subjects": ["Français"],
+      "schoolLevels": ["1ère année bac"],
+      "salary": 4000,
+      "groups": ["Français Bac 1"],
+      "hireDate": "2026-01-11",
+      "paymentStatus": "en attente",
+      "notes": "Très bonne professeur"
+    },
+    {
+      "id": 3,
+      "fullName": "Youssef Benjelloun",
+      "email": "youssef@test.com",
+      "phone": "0612345680",
+      "subjects": ["Physique"],
+      "schoolLevels": ["2ème année bac"],
+      "salary": 4200,
+      "groups": ["Physique Bac 1"],
+      "hireDate": "2026-01-12",
+      "paymentStatus": "en attente",
+      "notes": "Professeur expérimenté"
+    }
+  ],
   "groups": [],
   "payments": [],
   "$schema": "./node_modules/json-server/schema.json"
