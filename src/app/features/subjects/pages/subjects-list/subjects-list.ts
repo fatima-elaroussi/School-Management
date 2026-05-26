@@ -15,10 +15,9 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { SubjectFormDialog } from '../../components/subject-form-dialog/subject-form-dialog';
+import { LookupsService } from '../../../../core/services/lookups.service';
 import { SubjectsService } from '../../services/subjects';
 import { Subject as SubjectModel } from '../../subject.model';
-import { LevelsService } from '../../../levels/services/levels';
-import { SchoolLevel } from '../../../levels/level.model';
 
 @Component({
   selector: 'app-subjects-list',
@@ -46,13 +45,13 @@ import { SchoolLevel } from '../../../levels/level.model';
 })
 export class SubjectsList {
   private readonly subjectsService = inject(SubjectsService);
-  private readonly levelsService = inject(LevelsService);
+  private readonly lookups = inject(LookupsService);
   private readonly dialog = inject(MatDialog);
   private readonly snackBar = inject(MatSnackBar);
 
   readonly loading = signal(true);
   readonly subjects = signal<SubjectModel[]>([]);
-  readonly levels = signal<SchoolLevel[]>([]);
+  readonly levels = this.lookups.levels;
   readonly searchSignal = signal('');
   readonly pageIndex = signal(0);
   readonly pageSize = signal(10);
@@ -71,9 +70,7 @@ export class SubjectsList {
     this.updateTableData();
   }
 
-  readonly levelNameMap = computed(() =>
-    Object.fromEntries(this.levels().map((level) => [level.id, level.name] as const)),
-  );
+  readonly levelNameMap = this.lookups.levelNameById;
 
   readonly filteredSubjects = computed(() => {
     const query = this.search.trim().toLowerCase();
@@ -103,15 +100,8 @@ export class SubjectsList {
   );
 
   constructor() {
-    this.loadLevels();
+    this.lookups.ensureLevels().subscribe();
     this.loadSubjects();
-  }
-
-  loadLevels(): void {
-    this.levelsService.getLevels().subscribe({
-      next: (levels) => this.levels.set(levels ?? []),
-      error: () => this.levels.set([]),
-    });
   }
 
   loadSubjects(): void {
@@ -158,7 +148,7 @@ export class SubjectsList {
   }
 
   getSchoolLevelName(levelId: number): string {
-    return this.levelNameMap()[levelId] ?? `Level ${levelId}`;
+    return this.lookups.getLevelName(levelId);
   }
 
   mapSchoolLevelNames(levelIds: number[]): string[] {

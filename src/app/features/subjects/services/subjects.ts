@@ -2,6 +2,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
+import { API_ENDPOINTS } from '../../../core/config/api.config';
+import { LookupsService } from '../../../core/services/lookups.service';
 import { Subject } from '../subject.model';
 
 @Injectable({
@@ -9,7 +11,8 @@ import { Subject } from '../subject.model';
 })
 export class SubjectsService {
   private readonly httpClient = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:3000/subjects';
+  private readonly lookups = inject(LookupsService);
+  private readonly apiUrl = API_ENDPOINTS.subjects;
 
   /**
    * Retrieve all subjects
@@ -52,7 +55,10 @@ export class SubjectsService {
    */
   createSubject(subject: Omit<Subject, 'id'>): Observable<Subject> {
     return this.httpClient.post<Subject>(this.apiUrl, subject).pipe(
-      tap((newSubject) => console.log('Subject created successfully:', newSubject)),
+      tap((newSubject) => {
+        console.log('Subject created successfully:', newSubject);
+        this.lookups.invalidateSubjects();
+      }),
       catchError((error) => {
         console.error('Error creating subject:', error);
         return throwError(() => new Error('Failed to create subject'));
@@ -65,7 +71,10 @@ export class SubjectsService {
    */
   updateSubject(id: number, subject: Partial<Subject>): Observable<Subject> {
     return this.httpClient.put<Subject>(`${this.apiUrl}/${id}`, subject).pipe(
-      tap((updatedSubject) => console.log('Subject updated successfully:', updatedSubject)),
+      tap((updatedSubject) => {
+        console.log('Subject updated successfully:', updatedSubject);
+        this.lookups.invalidateSubjects();
+      }),
       catchError((error) => {
         console.error(`Error updating subject with ID ${id}:`, error);
         return throwError(() => new Error(`Failed to update subject with ID ${id}`));
@@ -78,7 +87,10 @@ export class SubjectsService {
    */
   deleteSubject(id: number): Observable<void> {
     return this.httpClient.delete<void>(`${this.apiUrl}/${id}`).pipe(
-      tap(() => console.log(`Subject with ID ${id} deleted successfully`)),
+      tap(() => {
+        console.log(`Subject with ID ${id} deleted successfully`);
+        this.lookups.invalidateSubjects();
+      }),
       catchError((error) => {
         console.error(`Error deleting subject with ID ${id}:`, error);
         return throwError(() => new Error(`Failed to delete subject with ID ${id}`));

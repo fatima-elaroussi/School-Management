@@ -14,6 +14,7 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
+import { LookupsService } from '../../../../core/services/lookups.service';
 import { StudentsService } from '../../services/students';
 import { Student } from '../../models/student.model';
 import { StudentFormDialog } from '../../components/student-form-dialog/student-form-dialog';
@@ -47,6 +48,7 @@ interface PaymentOption {
 })
 export class StudentsList {
   private readonly studentsService = inject(StudentsService);
+  private readonly lookups = inject(LookupsService);
   private readonly dialog = inject(MatDialog);
   private readonly snackBar = inject(MatSnackBar);
 
@@ -119,16 +121,19 @@ export class StudentsList {
     return this.filteredStudents().slice(start, end);
   });
 
-  readonly schoolLevels = computed(() => {
-    const levels = Array.from(new Set(this.students().map((s) => s.schoolLevel))).filter(Boolean);
-    return levels.sort();
-  });
+  readonly schoolLevels = computed(() =>
+    this.lookups.withLegacyNames(
+      this.lookups.levelNames(),
+      this.students().map((student) => student.schoolLevel),
+    ),
+  );
 
   readonly totalPages = computed(() =>
     Math.max(1, Math.ceil(this.filteredStudents().length / this.pageSize())),
   );
 
   constructor() {
+    this.lookups.ensureLevels().subscribe();
     this.loadStudents();
   }
 

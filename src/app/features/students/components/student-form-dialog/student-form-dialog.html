@@ -63,7 +63,10 @@
 
       <mat-form-field appearance="fill">
         <mat-label>School level</mat-label>
-        <input matInput formControlName="schoolLevel" placeholder="2ème année bac" />
+        <mat-select formControlName="schoolLevel" [disabled]="lookupsLoading()">
+          <mat-option *ngFor="let level of levelNames()" [value]="level">{{ level }}</mat-option>
+        </mat-select>
+        <mat-hint *ngIf="lookupsLoading()">Loading levels…</mat-hint>
         <mat-error *ngIf="controls.schoolLevel.invalid && controls.schoolLevel.touched">
           School level is required.
         </mat-error>
@@ -71,8 +74,17 @@
 
       <mat-form-field appearance="fill">
         <mat-label>Subjects</mat-label>
-        <input matInput formControlName="subjects" placeholder="Mathématiques, Physique" />
-        <mat-hint>Separate values with commas</mat-hint>
+        <mat-select formControlName="subjects" multiple [disabled]="lookupsLoading()">
+          <mat-select-trigger>
+            <span *ngIf="!controls.subjects.value.length" class="muted">Select subjects</span>
+            <span *ngIf="controls.subjects.value.length">{{ controls.subjects.value.join(', ') }}</span>
+          </mat-select-trigger>
+          <mat-option *ngFor="let subject of subjectNames()" [value]="subject">
+            {{ subject }}
+          </mat-option>
+        </mat-select>
+        <mat-hint *ngIf="lookupsLoading(); else subjectsHint">Loading subjects…</mat-hint>
+        <ng-template #subjectsHint>Select one or more subjects</ng-template>
         <mat-error *ngIf="controls.subjects.invalid && controls.subjects.touched">
           At least one subject is required.
         </mat-error>

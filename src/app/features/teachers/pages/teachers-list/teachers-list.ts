@@ -15,6 +15,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { TeacherFormDialog } from '../../components/teacher-form-dialog/teacher-form-dialog';
+import { LookupsService } from '../../../../core/services/lookups.service';
 import { TeachersService } from '../../services/teachers';
 import { Teacher } from '../../models/teacher.model';
 
@@ -46,6 +47,7 @@ type PaymentStatusFilter = 'all' | 'payé' | 'en attente';
 })
 export class TeachersList {
   private readonly teachersService = inject(TeachersService);
+  private readonly lookups = inject(LookupsService);
   private readonly dialog = inject(MatDialog);
 
   readonly loading = signal(true);
@@ -146,21 +148,19 @@ export class TeachersList {
     this.updateTableData();
   }
 
-  readonly subjectOptions = computed(() => {
-    const subjects = new Set<string>();
-    this.teachers().forEach((teacher) => {
-      teacher.subjects.forEach((subject) => subjects.add(subject));
-    });
-    return [...subjects].sort();
-  });
+  readonly subjectOptions = computed(() =>
+    this.lookups.withLegacyNames(
+      this.lookups.subjectNames(),
+      this.teachers().flatMap((teacher) => teacher.subjects),
+    ),
+  );
 
-  readonly schoolLevelOptions = computed(() => {
-    const levels = new Set<string>();
-    this.teachers().forEach((teacher) => {
-      teacher.schoolLevels.forEach((level) => levels.add(level));
-    });
-    return [...levels].sort();
-  });
+  readonly schoolLevelOptions = computed(() =>
+    this.lookups.withLegacyNames(
+      this.lookups.levelNames(),
+      this.teachers().flatMap((teacher) => teacher.schoolLevels),
+    ),
+  );
 
   readonly filteredTeachers = computed(() => {
     const query = this.search.trim().toLowerCase();
@@ -209,6 +209,7 @@ export class TeachersList {
   private readonly snackBar = inject(MatSnackBar);
 
   constructor() {
+    this.lookups.preloadAll().subscribe();
     this.loadTeachers();
   }
 

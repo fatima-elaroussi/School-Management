@@ -9,8 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { LevelsService } from '../../../levels/services/levels';
-import { SchoolLevel } from '../../../levels/level.model';
+import { LookupsService } from '../../../../core/services/lookups.service';
 import { SubjectsService } from '../../services/subjects';
 import { Subject as SubjectModel } from '../../subject.model';
 
@@ -190,13 +189,13 @@ export class SubjectFormDialog {
   private readonly fb = inject(FormBuilder);
   private readonly dialogRef = inject(MatDialogRef<SubjectFormDialog>);
   private readonly subjectsService = inject(SubjectsService);
-  private readonly levelsService = inject(LevelsService);
+  private readonly lookups = inject(LookupsService);
   private readonly snackBar = inject(MatSnackBar);
   readonly data = inject(MAT_DIALOG_DATA) as SubjectDialogData | null;
 
   readonly isEditMode = Boolean(this.data?.subject);
   readonly saveLoading = signal(false);
-  readonly levels = signal<SchoolLevel[]>([]);
+  readonly levels = this.lookups.levels;
 
   readonly form = this.fb.nonNullable.group({
     name: [this.data?.subject?.name ?? '', [Validators.required, Validators.minLength(2)]],
@@ -214,14 +213,7 @@ export class SubjectFormDialog {
   }
 
   constructor() {
-    this.loadLevels();
-  }
-
-  loadLevels(): void {
-    this.levelsService.getLevels().subscribe({
-      next: (levels) => this.levels.set(levels ?? []),
-      error: () => this.levels.set([]),
-    });
+    this.lookups.ensureLevels().subscribe();
   }
 
   getErrorMessage(controlName: keyof typeof this.form.controls): string {

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
@@ -10,6 +10,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { LookupsService } from '../../../../core/services/lookups.service';
+import { nonEmptyArray } from '../../../../core/validators/array.validators';
 import { Teacher } from '../../models/teacher.model';
 import { TeachersService } from '../../services/teachers';
 
@@ -40,31 +42,21 @@ export class TeacherFormDialog {
   private readonly fb = inject(FormBuilder);
   private readonly dialogRef = inject(MatDialogRef<TeacherFormDialog>);
   private readonly teachersService = inject(TeachersService);
+  private readonly lookups = inject(LookupsService);
   private readonly snackBar = inject(MatSnackBar);
   readonly data = inject(MAT_DIALOG_DATA) as TeacherDialogData | null;
 
   readonly isEditMode = Boolean(this.data?.teacher);
   readonly saveLoading = signal(false);
+  readonly lookupsLoading = this.lookups.anyLoading;
 
-  readonly subjectOptions = [
-    'Mathematics',
-    'Physics',
-    'Chemistry',
-    'Biology',
-    'History',
-    'Geography',
-    'Languages',
-    'Arts',
-    'Physical Education',
-  ];
+  readonly subjectNames = computed(() =>
+    this.lookups.withLegacyNames(this.lookups.subjectNames(), this.data?.teacher?.subjects),
+  );
 
-  readonly schoolLevelOptions = [
-    'Primary',
-    'Middle School',
-    'High School',
-    'Vocational',
-    'International',
-  ];
+  readonly schoolLevelNames = computed(() =>
+    this.lookups.withLegacyNames(this.lookups.levelNames(), this.data?.teacher?.schoolLevels),
+  );
 
   readonly paymentStatusOptions = [
     { value: 'payé', label: 'Payé' },
@@ -78,13 +70,17 @@ export class TeacherFormDialog {
       this.data?.teacher?.phone ?? '',
       [Validators.required, Validators.pattern(/^[0-9+\s-]{7,20}$/)],
     ],
-    subjects: [this.data?.teacher?.subjects ?? [], [Validators.required]],
-    schoolLevels: [this.data?.teacher?.schoolLevels ?? [], [Validators.required]],
+    subjects: [this.data?.teacher?.subjects ?? [], [nonEmptyArray]],
+    schoolLevels: [this.data?.teacher?.schoolLevels ?? [], [nonEmptyArray]],
     salary: [this.data?.teacher?.salary ?? 0, [Validators.required, Validators.min(0)]],
     groups: [this.data?.teacher?.groups?.join(', ') ?? '', [Validators.required]],
     paymentStatus: [this.data?.teacher?.paymentStatus ?? 'payé', [Validators.required]],
     notes: [this.data?.teacher?.notes ?? ''],
   });
+
+  constructor() {
+    this.lookups.preloadAll().subscribe();
+  }
 
   get controls() {
     return this.form.controls;
@@ -128,8 +124,8 @@ export class TeacherFormDialog {
       fullName: value.fullName.trim(),
       email: value.email.trim(),
       phone: value.phone.trim(),
-      subjects: value.subjects,
-      schoolLevels: value.schoolLevels,
+      subjects: [...value.subjects],
+      schoolLevels: [...value.schoolLevels],
       salary: Number(value.salary),
       groups: value.groups
         .split(',')

@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatChipsModule } from '@angular/material/chips';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -9,6 +10,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { LookupsService } from '../../../../core/services/lookups.service';
+import { nonEmptyArray } from '../../../../core/validators/array.validators';
 import { Student } from '../../models/student.model';
 import { StudentsService } from '../../services/students';
 
@@ -28,6 +31,7 @@ interface StudentDialogData {
     MatInputModule,
     MatButtonModule,
     MatSelectModule,
+    MatChipsModule,
     MatSnackBarModule,
     MatProgressSpinnerModule,
   ],
@@ -38,12 +42,22 @@ export class StudentFormDialog {
   private readonly fb = inject(FormBuilder);
   private readonly dialogRef = inject(MatDialogRef<StudentFormDialog>);
   private readonly studentsService = inject(StudentsService);
+  private readonly lookups = inject(LookupsService);
   private readonly snackBar = inject(MatSnackBar);
   readonly data = inject(MAT_DIALOG_DATA) as StudentDialogData | null;
 
   readonly imagePreview = signal<string | null>(this.data?.student?.photo ?? null);
   readonly saveLoading = signal(false);
   readonly isEditMode = Boolean(this.data?.student);
+  readonly lookupsLoading = this.lookups.anyLoading;
+
+  readonly levelNames = computed(() =>
+    this.lookups.withLegacyNames(this.lookups.levelNames(), this.data?.student?.schoolLevel),
+  );
+
+  readonly subjectNames = computed(() =>
+    this.lookups.withLegacyNames(this.lookups.subjectNames(), this.data?.student?.subjects),
+  );
 
   readonly paymentStatusOptions = [
     { value: 'payé', label: 'Payé' },
@@ -74,7 +88,7 @@ export class StudentFormDialog {
     ],
     address: [this.data?.student?.address ?? '', [Validators.required]],
     schoolLevel: [this.data?.student?.schoolLevel ?? '', [Validators.required]],
-    subjects: [this.data?.student?.subjects?.join(', ') ?? '', [Validators.required]],
+    subjects: [this.data?.student?.subjects ?? [], [nonEmptyArray]],
     groups: [this.data?.student?.groups?.join(', ') ?? '', [Validators.required]],
     monthlyPayment: [
       this.data?.student?.monthlyPayment ?? 0,
@@ -84,6 +98,10 @@ export class StudentFormDialog {
     notes: [this.data?.student?.notes ?? ''],
     photo: [this.data?.student?.photo ?? ''],
   });
+
+  constructor() {
+    this.lookups.preloadAll().subscribe();
+  }
 
   get controls() {
     return this.form.controls;
@@ -120,10 +138,7 @@ export class StudentFormDialog {
       parentPhone: value.parentPhone.trim(),
       address: value.address.trim(),
       schoolLevel: value.schoolLevel.trim(),
-      subjects: value.subjects
-        .split(',')
-        .map((item: string) => item.trim())
-        .filter(Boolean),
+      subjects: [...value.subjects],
       groups: value.groups
         .split(',')
         .map((item: string) => item.trim())
