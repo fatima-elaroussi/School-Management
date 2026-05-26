@@ -7,7 +7,7 @@
         Search, filter, and manage your teaching staff in a polished admin experience.
       </p>
     </div>
-    <button mat-flat-button color="primary" class="add-button" type="button">
+    <button mat-flat-button color="primary" class="add-button" type="button" (click)="openTeacherDialog()">
       <mat-icon>person_add</mat-icon>
       Add teacher
     </button>
@@ -44,6 +44,16 @@
         <mat-option value="all">All subjects</mat-option>
         <mat-option *ngFor="let subject of subjectOptions()" [value]="subject">
           {{ subject }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="filter-field">
+      <mat-label>School level</mat-label>
+      <mat-select [(ngModel)]="schoolLevelFilter">
+        <mat-option value="all">All levels</mat-option>
+        <mat-option *ngFor="let level of schoolLevelOptions()" [value]="level">
+          {{ level }}
         </mat-option>
       </mat-select>
     </mat-form-field>
@@ -154,10 +164,10 @@
             <ng-container matColumnDef="actions">
               <th mat-header-cell *matHeaderCellDef></th>
               <td mat-cell *matCellDef="let teacher">
-                <button mat-icon-button type="button" aria-label="Edit teacher">
+                <button mat-icon-button type="button" aria-label="Edit teacher" (click)="openTeacherDialog(teacher)">
                   <mat-icon>edit</mat-icon>
                 </button>
-                <button mat-icon-button color="warn" type="button" aria-label="Delete teacher">
+                <button mat-icon-button color="warn" type="button" aria-label="Delete teacher" (click)="deleteTeacher(teacher)">
                   <mat-icon>delete</mat-icon>
                 </button>
               </td>
@@ -214,7 +224,7 @@
               </div>
 
               <div class="card-actions">
-                <button mat-button type="button">
+                <button mat-button type="button" (click)="openTeacherDialog(teacher)">
                   <mat-icon>edit</mat-icon>
                   Edit
                 </button>

@@ -1,0 +1,62 @@
+.dialog-shell {
+  display: grid;
+  gap: 20px;
+  max-width: 100%;
+}
+
+.dialog-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.dialog-header h2 {
+  margin: 0.35rem 0 0.5rem;
+  font-size: 1.65rem;
+}
+
+.dialog-header .eyebrow {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #5f6370;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.dialog-header p {
+  margin: 0;
+  color: #505763;
+  line-height: 1.65;
+}
+
+.dialog-form {
+  display: grid;
+  gap: 18px;
+}
+
+.field-full {
+  width: 100%;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+mat-progress-spinner {
+  margin-right: 8px;
+}
+
+@media screen and (max-width: 620px) {
+  .dialog-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dialog-actions {
+    justify-content: stretch;
+  }
+}

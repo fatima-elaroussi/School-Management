@@ -28,15 +28,29 @@ export const routes: Routes = [
       {
         path: 'students',
         loadComponent: () =>
-          import('./features/students/pages/students-list/students-list')
-            .then(c => c.StudentsList)
+          import('./features/students/pages/students-list/students-list').then(
+            (c) => c.StudentsList,
+          ),
       },
       {
         path: 'teachers',
         loadComponent: () =>
-          import('./features/teachers/pages/teachers-list/teachers-list')
-            .then(c => c.TeachersList)
-      }
+          import('./features/teachers/pages/teachers-list/teachers-list').then(
+            (c) => c.TeachersList,
+          ),
+      },
+      {
+        path: 'levels',
+        loadComponent: () =>
+          import('./features/levels/pages/levels-list/levels-list').then((c) => c.LevelsList),
+      },
+      {
+        path: 'subjects',
+        loadComponent: () =>
+          import('./features/subjects/pages/subjects-list/subjects-list').then(
+            (c) => c.SubjectsList,
+          ),
+      },
     ],
   },
 ];

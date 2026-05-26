@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -12,6 +13,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
+import { TeacherFormDialog } from '../../components/teacher-form-dialog/teacher-form-dialog';
 import { TeachersService } from '../../services/teachers';
 import { Teacher } from '../../models/teacher.model';
 
@@ -28,6 +31,7 @@ type PaymentStatusFilter = 'all' | 'payé' | 'en attente';
     MatButtonModule,
     MatCardModule,
     MatChipsModule,
+    MatDialogModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
@@ -42,12 +46,14 @@ type PaymentStatusFilter = 'all' | 'payé' | 'en attente';
 })
 export class TeachersList {
   private readonly teachersService = inject(TeachersService);
+  private readonly dialog = inject(MatDialog);
 
   readonly loading = signal(true);
   readonly teachers = signal<Teacher[]>([]);
   readonly searchSignal = signal('');
   readonly statusSignal = signal<PaymentStatusFilter>('all');
   readonly subjectSignal = signal('all');
+  readonly schoolLevelSignal = signal('all');
   readonly sortFieldSignal = signal<SortField>('fullName');
   readonly sortDirectionSignal = signal<'asc' | 'desc'>('asc');
   readonly pageIndex = signal(0);
@@ -112,6 +118,16 @@ export class TeachersList {
     this.updateTableData();
   }
 
+  get schoolLevelFilter() {
+    return this.schoolLevelSignal();
+  }
+
+  set schoolLevelFilter(value: string) {
+    this.schoolLevelSignal.set(value);
+    this.pageIndex.set(0);
+    this.updateTableData();
+  }
+
   get sortField() {
     return this.sortFieldSignal();
   }
@@ -138,16 +154,27 @@ export class TeachersList {
     return [...subjects].sort();
   });
 
+  readonly schoolLevelOptions = computed(() => {
+    const levels = new Set<string>();
+    this.teachers().forEach((teacher) => {
+      teacher.schoolLevels.forEach((level) => levels.add(level));
+    });
+    return [...levels].sort();
+  });
+
   readonly filteredTeachers = computed(() => {
     const query = this.search.trim().toLowerCase();
     const status = this.statusFilter;
     const subject = this.subjectFilter;
+    const schoolLevel = this.schoolLevelFilter;
 
     return this.teachers().filter((teacher) => {
       const matchesName = !query || teacher.fullName.toLowerCase().includes(query);
       const matchesStatus = status === 'all' || teacher.paymentStatus === status;
       const matchesSubject = subject === 'all' || teacher.subjects.includes(subject);
-      return matchesName && matchesStatus && matchesSubject;
+      const matchesSchoolLevel =
+        schoolLevel === 'all' || teacher.schoolLevels.includes(schoolLevel);
+      return matchesName && matchesStatus && matchesSubject && matchesSchoolLevel;
     });
   });
 
@@ -208,27 +235,53 @@ export class TeachersList {
   }
 
   deleteTeacher(teacher: Teacher): void {
-    if (!confirm(`Delete ${teacher.fullName}?`)) {
-      return;
-    }
+    const confirmDialogRef = this.dialog.open(ConfirmDialog, {
+      width: '420px',
+      data: {
+        title: 'Delete teacher',
+        message: `Are you sure you want to delete ${teacher.fullName}? This action cannot be undone.`,
+        confirmText: 'Delete',
+        cancelText: 'Cancel',
+      },
+    });
 
-    this.loading.set(true);
-    this.teachersService.deleteTeacher(teacher.id).subscribe({
-      next: () => {
-        this.teachers.update((list) => list.filter((item) => item.id !== teacher.id));
-        this.updateTableData();
-        this.pageIndex.set(0);
-        this.snackBar.open('Teacher deleted successfully.', 'Close', { duration: 3000 });
-      },
-      error: () => {
-        this.snackBar.open('Unable to delete teacher. Please try again.', 'Close', {
-          duration: 3000,
-        });
-        this.loading.set(false);
-      },
-      complete: () => {
-        this.loading.set(false);
-      },
+    confirmDialogRef.afterClosed().subscribe((confirmed) => {
+      if (!confirmed) {
+        return;
+      }
+
+      this.loading.set(true);
+      this.teachersService.deleteTeacher(teacher.id).subscribe({
+        next: () => {
+          this.teachers.update((list) => list.filter((item) => item.id !== teacher.id));
+          this.updateTableData();
+          this.pageIndex.set(0);
+          this.snackBar.open('Teacher deleted successfully.', 'Close', { duration: 3000 });
+        },
+        error: () => {
+          this.snackBar.open('Unable to delete teacher. Please try again.', 'Close', {
+            duration: 3000,
+          });
+          this.loading.set(false);
+        },
+        complete: () => {
+          this.loading.set(false);
+        },
+      });
+    });
+  }
+
+  openTeacherDialog(teacher?: Teacher): void {
+    const dialogRef = this.dialog.open(TeacherFormDialog, {
+      width: '920px',
+      maxWidth: '95vw',
+      data: { teacher },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result?.saved) {
+        this.loadTeachers();
+      }
     });
   }
 

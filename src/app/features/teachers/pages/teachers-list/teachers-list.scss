@@ -1,10 +1,55 @@
-/* Desktop by default */
+.filter-bar {
+  display: grid;
+  grid-template-columns: 1.5fr repeat(4, minmax(0, 1fr)) auto;
+  gap: 1rem;
+  align-items: end;
+  margin-bottom: 1.5rem;
+}
+
+.filter-field {
+  min-width: 160px;
+}
+
+.search-field {
+  min-width: 220px;
+}
+
+.sort-field {
+  min-width: 180px;
+}
+
+.filter-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  color: rgba(0, 0, 0, 0.65);
+  font-size: 0.95rem;
+  justify-self: end;
+  text-align: right;
+}
+
 .desktop-table {
   display: block;
 }
 
 .mobile-cards {
   display: none;
+}
+
+@media (max-width: 1024px) {
+  .filter-bar {
+    grid-template-columns: 1fr 1fr;
+    align-items: stretch;
+  }
+
+  .sort-direction {
+    justify-self: start;
+  }
+
+  .filter-summary {
+    justify-self: start;
+    text-align: left;
+  }
 }
 
 /* Mobile / tablet */

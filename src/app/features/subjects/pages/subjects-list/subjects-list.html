@@ -1,0 +1,144 @@
+<section class="subjects-page-shell">
+  <header class="page-header">
+    <div class="page-title-group">
+      <p class="eyebrow">Matières</p>
+      <h1>Subject management</h1>
+      <p class="page-description">
+        Keep curriculum subjects organized with fast search, level tags, and color-coded cards.
+      </p>
+    </div>
+
+    <button mat-flat-button color="primary" type="button" (click)="openSubjectDialog()">
+      <mat-icon>add</mat-icon>
+      Add subject
+    </button>
+  </header>
+
+  <mat-card class="overview-card">
+    <div class="overview-grid">
+      <div class="overview-item">
+        <span class="overview-label">Subjects</span>
+        <strong>{{ totalSubjects() }}</strong>
+      </div>
+      <div class="overview-item">
+        <span class="overview-label">School levels</span>
+        <strong>{{ levels().length }}</strong>
+      </div>
+      <div class="overview-item">
+        <span class="overview-label">Filtered</span>
+        <strong>{{ filteredSubjects().length }}</strong>
+      </div>
+    </div>
+  </mat-card>
+
+  <mat-card class="table-card">
+    <div class="toolbar-row">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search subjects</mat-label>
+        <input matInput placeholder="Type a subject, level or color" [(ngModel)]="search" />
+        <button
+          mat-icon-button
+          matSuffix
+          aria-label="Clear search"
+          *ngIf="search"
+          type="button"
+          (click)="clearSearch()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+      <div class="toolbar-info">
+        <span>{{ filteredSubjects().length }} results</span>
+      </div>
+    </div>
+
+    <ng-container *ngIf="loading()">
+      <div class="loading-panel">
+        <mat-progress-spinner diameter="60" mode="indeterminate"></mat-progress-spinner>
+        <p>Loading subjects...</p>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="!loading()">
+      <ng-container *ngIf="totalSubjects() === 0">
+        <div class="empty-panel">
+          <mat-icon>menu_book</mat-icon>
+          <h2>No subjects available yet</h2>
+          <p>Create your first subject to start organizing school levels.</p>
+          <button mat-flat-button color="primary" type="button" (click)="openSubjectDialog()">
+            Add first subject
+          </button>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="totalSubjects() > 0">
+        <div class="table-wrapper">
+          <table mat-table [dataSource]="dataSource" class="subjects-table mat-elevation-z2">
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef>Subject name</th>
+              <td mat-cell *matCellDef="let subject">{{ subject.name }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="schoolLevels">
+              <th mat-header-cell *matHeaderCellDef>School levels</th>
+              <td mat-cell *matCellDef="let subject">
+                <div class="level-chips">
+                  <mat-chip
+                    *ngFor="let level of mapSchoolLevelNames(subject.schoolLevels)"
+                    [ngStyle]="{ 'background-color': '#eef4ff', color: '#1d3557' }"
+                    >{{ level }}</mat-chip
+                  >
+                </div>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="color">
+              <th mat-header-cell *matHeaderCellDef>Color</th>
+              <td mat-cell *matCellDef="let subject">
+                <mat-chip class="color-chip" [ngStyle]="getColorChipStyles(subject.color)">
+                  {{ subject.color || 'Default' }}
+                </mat-chip>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Actions</th>
+              <td mat-cell *matCellDef="let subject">
+                <button
+                  mat-icon-button
+                  color="primary"
+                  aria-label="Edit subject"
+                  type="button"
+                  (click)="openSubjectDialog(subject)"
+                >
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
+                  color="warn"
+                  aria-label="Delete subject"
+                  type="button"
+                  (click)="deleteSubject(subject)"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayColumns"></tr>
+            <tr mat-row *matRowDef="let subject; columns: displayColumns"></tr>
+          </table>
+        </div>
+
+        <mat-paginator
+          [length]="filteredSubjects().length"
+          [pageSize]="pageSize()"
+          [pageSizeOptions]="pageSizeOptions"
+          [pageIndex]="pageIndex()"
+          (page)="onPage($event)"
+          showFirstLastButtons
+        ></mat-paginator>
+      </ng-container>
+    </ng-container>
+  </mat-card>
+</section>

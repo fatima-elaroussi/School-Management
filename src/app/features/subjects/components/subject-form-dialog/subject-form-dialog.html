@@ -1,0 +1,64 @@
+<div class="subject-dialog-shell">
+  <div class="dialog-header">
+    <div>
+      <p class="eyebrow">Subject details</p>
+      <h2>{{ title }}</h2>
+      <p>Assign the subject to school levels and pick a color for fast recognition.</p>
+    </div>
+    <button mat-icon-button aria-label="Close dialog" type="button" (click)="cancel()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <form class="subject-dialog-form" [formGroup]="form">
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Subject name</mat-label>
+      <input matInput formControlName="name" />
+      <mat-error *ngIf="controls.name.invalid">{{ getErrorMessage('name') }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>School levels</mat-label>
+      <mat-select formControlName="schoolLevels" multiple>
+        <mat-option *ngFor="let level of levels()" [value]="level.id">{{ level.name }}</mat-option>
+      </mat-select>
+      <mat-error *ngIf="controls.schoolLevels.invalid">{{
+        getErrorMessage('schoolLevels')
+      }}</mat-error>
+    </mat-form-field>
+
+    <div class="color-row">
+      <mat-form-field appearance="fill" class="color-field">
+        <mat-label>Color</mat-label>
+        <input matInput type="color" formControlName="color" />
+        <mat-error *ngIf="controls.color.invalid">{{ getErrorMessage('color') }}</mat-error>
+      </mat-form-field>
+      <div class="color-preview" [ngStyle]="{ 'background-color': controls.color.value }">
+        <span>{{ controls.color.value }}</span>
+      </div>
+    </div>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="description" rows="4"></textarea>
+    </mat-form-field>
+
+    <div class="dialog-actions">
+      <button mat-button type="button" (click)="cancel()">Cancel</button>
+      <button
+        mat-flat-button
+        color="primary"
+        type="button"
+        [disabled]="saveLoading()"
+        (click)="save()"
+      >
+        <mat-progress-spinner
+          *ngIf="saveLoading()"
+          diameter="18"
+          mode="indeterminate"
+        ></mat-progress-spinner>
+        {{ isEditMode ? 'Save subject' : 'Create subject' }}
+      </button>
+    </div>
+  </form>
+</div>

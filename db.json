@@ -279,44 +279,140 @@
   ],
   "teachers": [
     {
-      "id": 1,
-      "fullName": "Ahmed Benali",
+      "fullName": "Ahmed BenalI",
       "email": "ahmed@test.com",
       "phone": "0612345678",
-      "subjects": ["Mathématiques"],
-      "schoolLevels": ["2ème année bac"],
+      "subjects": [
+        "Mathématiques"
+      ],
+      "schoolLevels": [
+        "2ème année bac"
+      ],
       "salary": 4500,
-      "groups": ["Math Bac 1"],
+      "groups": [
+        "Math Bac 1"
+      ],
       "hireDate": "2026-01-10",
-      "paymentStatus": "payé",
-      "notes": "Excellent professeur"
-    }
-    ,
+      "paymentStatus": "en attente",
+      "notes": "Excellent professeur",
+      "id": "1"
+    },
     {
-      "id": 2,
+      "id": "2",
       "fullName": "Sara El Amrani",
       "email": "sara@test.com",
       "phone": "0612345679",
-      "subjects": ["Français"],
-      "schoolLevels": ["1ère année bac"],
+      "subjects": [
+        "Français"
+      ],
+      "schoolLevels": [
+        "1ère année bac"
+      ],
       "salary": 4000,
-      "groups": ["Français Bac 1"],
+      "groups": [
+        "Français Bac 1"
+      ],
       "hireDate": "2026-01-11",
       "paymentStatus": "en attente",
       "notes": "Très bonne professeur"
     },
     {
-      "id": 3,
+      "id": "3",
       "fullName": "Youssef Benjelloun",
       "email": "youssef@test.com",
       "phone": "0612345680",
-      "subjects": ["Physique"],
-      "schoolLevels": ["2ème année bac"],
+      "subjects": [
+        "Physique"
+      ],
+      "schoolLevels": [
+        "2ème année bac"
+      ],
       "salary": 4200,
-      "groups": ["Physique Bac 1"],
+      "groups": [
+        "Physique Bac 1"
+      ],
       "hireDate": "2026-01-12",
       "paymentStatus": "en attente",
       "notes": "Professeur expérimenté"
+    },
+    {
+      "fullName": "prof",
+      "email": "prof@gmail.com",
+      "phone": "123456789",
+      "subjects": [
+        "Mathematics",
+        "Physics"
+      ],
+      "schoolLevels": [
+        "Middle School",
+        "High School"
+      ],
+      "salary": 4500,
+      "groups": [
+        "BACA"
+      ],
+      "hireDate": "2026-05-20",
+      "paymentStatus": "en attente",
+      "notes": "",
+      "id": "of28peyOsrw"
+    },
+    {
+      "fullName": "test",
+      "email": "test@gmail.com",
+      "phone": "234567890",
+      "subjects": [
+        "Physics",
+        "Biology"
+      ],
+      "schoolLevels": [
+        "Vocational"
+      ],
+      "salary": 7890,
+      "groups": [
+        "BACA"
+      ],
+      "hireDate": "2026-05-25",
+      "paymentStatus": "en attente",
+      "notes": "",
+      "id": "hBtqgCSeCMA"
+    }
+  ],
+  "levels": [
+    {
+      "name": "1ère année collège",
+      "category": "collège",
+      "description": "",
+      "id": "1"
+    },
+    {
+      "id": "2",
+      "name": "2ème année bac",
+      "category": "lycée"
+    },
+    {
+      "name": "testo",
+      "category": "lycée",
+      "description": "",
+      "id": "2sqRkmfoatA"
+    }
+  ],
+  "subjects": [
+    {
+      "id": "1",
+      "name": "Mathématiques",
+      "schoolLevels": [
+        1,
+        2
+      ],
+      "color": "#3b82f6"
+    },
+    {
+      "id": "2",
+      "name": "Physique",
+      "schoolLevels": [
+        2
+      ],
+      "color": "#10b981"
     }
   ],
   "groups": [],
