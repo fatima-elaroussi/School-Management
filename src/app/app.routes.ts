@@ -61,8 +61,15 @@ export const routes: Routes = [
         children: [
           {
             path: '',
-            redirectTo: 'payments',
+            redirectTo: 'dashboard',
             pathMatch: 'full',
+          },
+          {
+            path: 'dashboard',
+            loadComponent: () =>
+              import('./features/finance/pages/finance-dashboard/finance-dashboard').then(
+                (m) => m.FinanceDashboard,
+              ),
           },
           {
             path: 'payments',

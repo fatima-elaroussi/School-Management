@@ -1,1 +1,257 @@
-<p>finance-dashboard works!</p>
+<section class="fin-dashboard">
+
+  <!-- ══ Header ════════════════════════════════════════════════════════════ -->
+  <header class="dash-header">
+    <div>
+      <p class="eyebrow">Vue d'ensemble · Finance</p>
+      <h1>Tableau de bord financier</h1>
+      <p class="dash-subtitle">{{ currentMonthLabel() }}</p>
+    </div>
+    <div class="header-actions">
+      <button mat-stroked-button type="button" routerLink="/finance/payments">
+        <mat-icon>payments</mat-icon>
+        Paiements
+      </button>
+      <button mat-flat-button color="primary" type="button" routerLink="/finance/expenses">
+        <mat-icon>account_balance_wallet</mat-icon>
+        Dépenses
+      </button>
+    </div>
+  </header>
+
+  <!-- ══ Error ══════════════════════════════════════════════════════════════ -->
+  @if (loadError()) {
+    <div class="error-banner">
+      <mat-icon>cloud_off</mat-icon>
+      <span>Impossible de charger les données. Vérifiez que le serveur est démarré.</span>
+      <button mat-stroked-button type="button" (click)="loadAll()">Réessayer</button>
+    </div>
+  }
+
+  <!-- ══ KPI strip ══════════════════════════════════════════════════════════ -->
+  <div class="kpi-strip">
+
+    <!-- Revenus totaux -->
+    <div class="kpi-card">
+      @if (loading()) { <div class="skel-kpi"></div> }
+      @else {
+        <div class="kpi-icon kpi-icon--revenue"><mat-icon>trending_up</mat-icon></div>
+        <div class="kpi-body">
+          <span class="kpi-label">Revenus totaux</span>
+          <strong class="kpi-value">{{ formatAmountCompact(totalRevenue()) }}</strong>
+          <span class="kpi-sub kpi-sub--positive"><mat-icon>check_circle</mat-icon>Encaissés</span>
+        </div>
+      }
+    </div>
+
+    <!-- Dépenses totales -->
+    <div class="kpi-card">
+      @if (loading()) { <div class="skel-kpi"></div> }
+      @else {
+        <div class="kpi-icon kpi-icon--expense"><mat-icon>trending_down</mat-icon></div>
+        <div class="kpi-body">
+          <span class="kpi-label">Dépenses totales</span>
+          <strong class="kpi-value">{{ formatAmountCompact(totalExpenses()) }}</strong>
+          <span class="kpi-sub kpi-sub--negative"><mat-icon>receipt_long</mat-icon>Charges payées</span>
+        </div>
+      }
+    </div>
+
+    <!-- Bénéfice du mois -->
+    <div class="kpi-card kpi-card--accent">
+      @if (loading()) { <div class="skel-kpi"></div> }
+      @else {
+        <div class="kpi-icon kpi-icon--profit"><mat-icon>account_balance</mat-icon></div>
+        <div class="kpi-body">
+          <span class="kpi-label">Bénéfice du mois</span>
+          <strong class="kpi-value" [class.kpi-value--negative]="monthlyProfit() < 0">
+            {{ profitSign() }}{{ formatAmountCompact(monthlyProfit()) }}
+          </strong>
+          <span class="kpi-sub"><mat-icon>calendar_month</mat-icon>{{ currentMonthLabel() }}</span>
+        </div>
+      }
+    </div>
+
+    <!-- Paiements en retard -->
+    <div class="kpi-card" [class.kpi-card--danger]="latePaymentsCount() > 0">
+      @if (loading()) { <div class="skel-kpi"></div> }
+      @else {
+        <div class="kpi-icon kpi-icon--late"><mat-icon>warning_amber</mat-icon></div>
+        <div class="kpi-body">
+          <span class="kpi-label">Paiements en retard</span>
+          <strong class="kpi-value kpi-value--late">{{ latePaymentsCount() }}</strong>
+          <span class="kpi-sub kpi-sub--negative">
+            <mat-icon>attach_money</mat-icon>{{ formatAmountCompact(latePaymentsAmount()) }}
+          </span>
+        </div>
+      }
+    </div>
+
+  </div>
+
+  <!-- ══ Secondary stats bar ════════════════════════════════════════════════ -->
+  <div class="stat-row">
+    <div class="stat-pill">
+      <mat-icon>schedule</mat-icon>
+      <span><strong>{{ pendingPaymentsCount() }}</strong> en attente</span>
+    </div>
+    <div class="stat-pill">
+      <mat-icon>people</mat-icon>
+      <span><strong>{{ students().length }}</strong> étudiants</span>
+    </div>
+    <div class="stat-pill stat-pill--rate">
+      <mat-icon>check_circle</mat-icon>
+      <span>Taux d'encaissement</span>
+      <div class="rate-bar">
+        <div class="rate-fill" [style.width.%]="collectionRate()"></div>
+      </div>
+      <strong>{{ collectionRate() }}%</strong>
+    </div>
+  </div>
+
+  <!-- ══ Charts row ══════════════════════════════════════════════════════════ -->
+  <div class="charts-grid">
+
+    <!-- ── Bar chart: monthly revenue vs expenses ──────────────────────── -->
+    <mat-card class="chart-card chart-card--bar">
+      <div class="chart-header">
+        <div>
+          <h2 class="chart-title">Revenus &amp; Dépenses — 6 mois</h2>
+          <p class="chart-subtitle">Comparaison mensuelle des flux financiers</p>
+        </div>
+      </div>
+
+      @if (loading()) {
+        <div class="chart-skeleton">
+          <div class="skel-chart-bars">
+            @for (i of [0,1,2,3,4,5]; track i) {
+              <div class="skel-bar-group">
+                <div class="skel-bar" [style.height.%]="35 + i * 8"></div>
+                <div class="skel-bar skel-bar-b" [style.height.%]="20 + i * 5"></div>
+              </div>
+            }
+          </div>
+        </div>
+      } @else {
+        <div class="chart-container chart-container--bar">
+          <canvas
+            baseChart
+            [data]="barChartData()"
+            [options]="barChartOptions"
+            type="bar"
+          ></canvas>
+        </div>
+      }
+    </mat-card>
+
+    <!-- ── Doughnut chart: expenses by category ────────────────────────── -->
+    <mat-card class="chart-card chart-card--doughnut">
+      <div class="chart-header">
+        <div>
+          <h2 class="chart-title">Dépenses par catégorie</h2>
+          <p class="chart-subtitle">Répartition des charges payées</p>
+        </div>
+      </div>
+
+      @if (loading()) {
+        <div class="chart-skeleton chart-skeleton--donut">
+          <div class="skel-donut"></div>
+        </div>
+      } @else if (doughnutData().datasets[0]?.data?.length === 0) {
+        <div class="chart-empty">
+          <mat-icon>donut_large</mat-icon>
+          <p>Aucune dépense payée enregistrée</p>
+        </div>
+      } @else {
+        <!-- Overlay total in donut centre via CSS positioning -->
+        <div class="donut-wrap">
+          <div class="chart-container chart-container--doughnut">
+            <canvas
+              baseChart
+              [data]="doughnutData()"
+              [options]="doughnutOptions"
+              type="doughnut"
+            ></canvas>
+          </div>
+          <div class="donut-center-overlay">
+            <strong>{{ formatAmountCompact(totalExpenses()) }}</strong>
+            <span>Total</span>
+          </div>
+        </div>
+      }
+    </mat-card>
+
+  </div>
+
+  <!-- ══ Recent payments table ═══════════════════════════════════════════════ -->
+  <mat-card class="table-card">
+    <div class="table-header">
+      <div>
+        <h2 class="chart-title">Paiements récents</h2>
+        <p class="chart-subtitle">Les 8 derniers paiements enregistrés</p>
+      </div>
+      <button mat-button color="primary" type="button" routerLink="/finance/payments">
+        Voir tous <mat-icon>arrow_forward</mat-icon>
+      </button>
+    </div>
+
+    @if (loading()) {
+      <div class="table-skeleton">
+        @for (r of skeletonRows; track $index) {
+          <div class="skel-row">
+            <div class="skel-avatar"></div>
+            <div class="skel-text skel-text--w"></div>
+            <div class="skel-text skel-text--n"></div>
+            <div class="skel-text skel-text--n"></div>
+            <div class="skel-badge"></div>
+          </div>
+        }
+      </div>
+    } @else if (recentPayments().length === 0) {
+      <div class="chart-empty">
+        <mat-icon>receipt_long</mat-icon>
+        <p>Aucun paiement enregistré</p>
+      </div>
+    } @else {
+      <div class="table-wrapper">
+        <table mat-table [dataSource]="recentPayments()" class="recent-table">
+
+          <ng-container matColumnDef="student">
+            <th mat-header-cell *matHeaderCellDef>Étudiant</th>
+            <td mat-cell *matCellDef="let p">
+              <div class="student-cell">
+                <div class="avatar">{{ p.studentName.charAt(0).toUpperCase() }}</div>
+                <span class="student-name">{{ p.studentName }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="month">
+            <th mat-header-cell *matHeaderCellDef>Mois</th>
+            <td mat-cell *matCellDef="let p">
+              <span class="month-pill">{{ p.month }}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="amount">
+            <th mat-header-cell *matHeaderCellDef>Montant</th>
+            <td mat-cell *matCellDef="let p">
+              <strong class="amount-val">{{ formatAmount(p.amount) }}</strong>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Statut</th>
+            <td mat-cell *matCellDef="let p">
+              <span class="status-badge {{ statusCss(p.status) }}">{{ statusLabel(p.status) }}</span>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="recentColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: recentColumns" class="recent-row"></tr>
+        </table>
+      </div>
+    }
+  </mat-card>
+
+</section>

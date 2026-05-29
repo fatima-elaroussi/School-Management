@@ -1,4 +1,4 @@
-<div class="expense-dialog" [formGroup]="form">
+<div class="expense-dialog">
 
   <!-- ── Header ────────────────────────────────────────────────────────────── -->
   <header class="dialog-header">
@@ -21,7 +21,8 @@
     </button>
   </header>
 
-  <form class="dialog-form" (ngSubmit)="save()">
+  <!-- [formGroup] MUST be on the <form> so ngSubmit fires correctly -->
+  <form class="dialog-form" [formGroup]="form" (ngSubmit)="save()">
 
     <!-- ── Section: Informations générales ───────────────────────────────── -->
     <div class="form-section">
@@ -121,9 +122,8 @@
             [matDatepicker]="datePicker"
             formControlName="date"
             placeholder="JJ/MM/AAAA"
-            readonly
           />
-          <mat-datepicker-toggle matSuffix [for]="datePicker" />
+          <mat-datepicker-toggle matIconSuffix [for]="datePicker" />
           <mat-datepicker #datePicker />
           @if (f.date.errors?.['required'] && f.date.touched) {
             <mat-error>La date est obligatoire.</mat-error>

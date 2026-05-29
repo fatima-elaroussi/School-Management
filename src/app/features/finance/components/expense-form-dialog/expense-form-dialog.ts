@@ -1,5 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
+import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
@@ -9,7 +10,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatNativeDateModule } from '@angular/material/core';
 import {
   Expense,
   ExpenseCategory,
@@ -71,6 +71,7 @@ function positiveAmount(control: AbstractControl): ValidationErrors | null {
 @Component({
   selector: 'app-expense-form-dialog',
   standalone: true,
+  providers: [provideNativeDateAdapter()],
   imports: [
     ReactiveFormsModule,
     MatDialogModule,
@@ -82,7 +83,6 @@ function positiveAmount(control: AbstractControl): ValidationErrors | null {
     MatSnackBarModule,
     MatProgressSpinnerModule,
     MatDatepickerModule,
-    MatNativeDateModule,
   ],
   templateUrl: './expense-form-dialog.html',
   styleUrls: ['./expense-form-dialog.scss'],

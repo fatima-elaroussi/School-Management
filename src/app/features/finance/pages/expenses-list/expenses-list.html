@@ -1,1 +1,377 @@
-<p>expenses-list works!</p>
+<section class="expenses-page">
+
+  <!-- ── Page header ──────────────────────────────────────────────────────── -->
+  <header class="page-header">
+    <div class="page-title-group">
+      <p class="eyebrow">Finance · Dépenses</p>
+      <h1>Gestion des dépenses</h1>
+      <p class="page-description">
+        Suivez les charges opérationnelles, analysez les catégories et maîtrisez le budget.
+      </p>
+    </div>
+    <button mat-flat-button color="primary" type="button" (click)="openExpenseDialog()">
+      <mat-icon>add</mat-icon>
+      Nouvelle dépense
+    </button>
+  </header>
+
+  <!-- ── KPI strip ────────────────────────────────────────────────────────── -->
+  <div class="kpi-strip">
+
+    <div class="kpi-card">
+      <div class="kpi-icon kpi-icon--total">
+        <mat-icon>receipt_long</mat-icon>
+      </div>
+      <div class="kpi-body">
+        <span class="kpi-label">Total</span>
+        <strong class="kpi-value">{{ totalCount() }}</strong>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-icon kpi-icon--amount">
+        <mat-icon>account_balance_wallet</mat-icon>
+      </div>
+      <div class="kpi-body">
+        <span class="kpi-label">Montant total</span>
+        <strong class="kpi-value kpi-value--lg">{{ formatAmount(summary().totalAmount) }}</strong>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-icon kpi-icon--paid">
+        <mat-icon>check_circle</mat-icon>
+      </div>
+      <div class="kpi-body">
+        <span class="kpi-label">Payées</span>
+        <strong class="kpi-value">{{ summary().paid }}</strong>
+        <span class="kpi-sub">{{ formatAmount(summary().paidAmount) }}</span>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-icon kpi-icon--pending">
+        <mat-icon>schedule</mat-icon>
+      </div>
+      <div class="kpi-body">
+        <span class="kpi-label">En attente</span>
+        <strong class="kpi-value">{{ summary().pending }}</strong>
+        <span class="kpi-sub">{{ formatAmount(summary().pendingAmount) }}</span>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-icon kpi-icon--rejected">
+        <mat-icon>cancel</mat-icon>
+      </div>
+      <div class="kpi-body">
+        <span class="kpi-label">Rejetées</span>
+        <strong class="kpi-value">{{ summary().rejected }}</strong>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Table card ───────────────────────────────────────────────────────── -->
+  <mat-card class="table-card">
+
+    <!-- ── Filter bar ─────────────────────────────────────────────────────── -->
+    <div class="filter-bar">
+
+      <mat-form-field appearance="outline" class="filter-field search-field">
+        <mat-label>Rechercher une dépense</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput placeholder="Titre, fournisseur, référence…" [(ngModel)]="search" />
+        @if (search) {
+          <button mat-icon-button matSuffix type="button" (click)="search = ''">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Catégorie</mat-label>
+        <mat-select [(ngModel)]="categoryFilter">
+          @for (opt of categoryOptions; track opt.value) {
+            <mat-option [value]="opt.value">
+              <div class="select-option-row">
+                <mat-icon class="select-opt-icon">{{ opt.icon }}</mat-icon>
+                {{ opt.label }}
+              </div>
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Statut</mat-label>
+        <mat-select [(ngModel)]="statusFilter">
+          @for (opt of statusOptions; track opt.value) {
+            <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <div class="filter-meta">
+        <span class="filter-count">{{ filteredCount() }} résultat(s)</span>
+        <span class="filter-page">Page {{ pageIndex() + 1 }} / {{ pageCount() }}</span>
+        @if (hasActiveFilter()) {
+          <button mat-button color="primary" type="button" (click)="clearFilters()">
+            <mat-icon>filter_alt_off</mat-icon>
+            Réinitialiser
+          </button>
+        }
+      </div>
+
+    </div>
+
+    <!-- ── States ─────────────────────────────────────────────────────────── -->
+    @if (loading()) {
+      <div class="state-panel">
+        <mat-progress-spinner diameter="52" mode="indeterminate" />
+        <p>Chargement des dépenses…</p>
+      </div>
+
+    } @else if (loadError()) {
+      <div class="state-panel">
+        <mat-icon class="state-icon state-icon--error">cloud_off</mat-icon>
+        <h2>Erreur de chargement</h2>
+        <p>Vérifiez que le serveur est démarré, puis réessayez.</p>
+        <button mat-flat-button color="primary" (click)="loadExpenses()">Réessayer</button>
+      </div>
+
+    } @else if (totalCount() === 0) {
+      <div class="state-panel">
+        <mat-icon class="state-icon">account_balance_wallet</mat-icon>
+        <h2>Aucune dépense enregistrée</h2>
+        <p>Commencez par ajouter une première dépense opérationnelle.</p>
+        <button mat-flat-button color="primary" (click)="openExpenseDialog()">
+          <mat-icon>add</mat-icon>
+          Nouvelle dépense
+        </button>
+      </div>
+
+    } @else if (filteredCount() === 0) {
+      <div class="state-panel">
+        <mat-icon class="state-icon">search_off</mat-icon>
+        <h2>Aucun résultat</h2>
+        <p>Aucune dépense ne correspond aux filtres actifs.</p>
+        <button mat-stroked-button type="button" (click)="clearFilters()">Réinitialiser</button>
+      </div>
+
+    } @else {
+
+      <!-- ── Desktop table ───────────────────────────────────────────────── -->
+      <div class="desktop-view">
+        <div class="table-wrapper">
+          <table mat-table [dataSource]="dataSource" class="expenses-table">
+
+            <!-- Title -->
+            <ng-container matColumnDef="title">
+              <th mat-header-cell *matHeaderCellDef>Dépense</th>
+              <td mat-cell *matCellDef="let e">
+                <div class="title-cell">
+                  <div class="cat-icon-badge {{ categoryColor(e.category) }}">
+                    <mat-icon>{{ categoryIcon(e.category) }}</mat-icon>
+                  </div>
+                  <div class="title-stack">
+                    <strong class="title-text">{{ e.title }}</strong>
+                    @if (e.vendor) {
+                      <span class="title-sub">{{ e.vendor }}</span>
+                    }
+                  </div>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Category -->
+            <ng-container matColumnDef="category">
+              <th mat-header-cell *matHeaderCellDef>Catégorie</th>
+              <td mat-cell *matCellDef="let e">
+                <span class="category-chip {{ categoryColor(e.category) }}">
+                  <mat-icon>{{ categoryIcon(e.category) }}</mat-icon>
+                  {{ categoryLabel(e.category) }}
+                </span>
+              </td>
+            </ng-container>
+
+            <!-- Amount -->
+            <ng-container matColumnDef="amount">
+              <th mat-header-cell *matHeaderCellDef>Montant</th>
+              <td mat-cell *matCellDef="let e">
+                <span class="amount-value">{{ formatAmount(e.amount) }}</span>
+              </td>
+            </ng-container>
+
+            <!-- Date -->
+            <ng-container matColumnDef="date">
+              <th mat-header-cell *matHeaderCellDef>Date</th>
+              <td mat-cell *matCellDef="let e">
+                <div class="date-stack">
+                  <span class="date-main">{{ formatDate(e.date) }}</span>
+                  @if (e.paidDate) {
+                    <span class="date-sub">Payé le {{ formatDate(e.paidDate) }}</span>
+                  }
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Status -->
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Statut</th>
+              <td mat-cell *matCellDef="let e">
+                <span class="status-chip {{ statusCss(e.status) }}">
+                  @switch (e.status) {
+                    @case ('payé')       { <mat-icon>check_circle</mat-icon> }
+                    @case ('en attente') { <mat-icon>schedule</mat-icon> }
+                    @case ('rejeté')     { <mat-icon>cancel</mat-icon> }
+                  }
+                  {{ statusLabel(e.status) }}
+                </span>
+              </td>
+            </ng-container>
+
+            <!-- Recurrence -->
+            <ng-container matColumnDef="recurrence">
+              <th mat-header-cell *matHeaderCellDef>Récurrence</th>
+              <td mat-cell *matCellDef="let e">
+                <span class="recurrence-pill" [class.recurrence-pill--unique]="e.recurrence === 'unique'">
+                  {{ recurrenceLabel(e.recurrence) }}
+                </span>
+              </td>
+            </ng-container>
+
+            <!-- Actions -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef></th>
+              <td mat-cell *matCellDef="let e">
+                <div class="action-btns">
+                  @if (e.status !== 'payé') {
+                    <button
+                      mat-icon-button
+                      color="primary"
+                      type="button"
+                      matTooltip="Marquer comme payé"
+                      (click)="markExpenseAsPaid(e)"
+                    >
+                      <mat-icon>check_circle_outline</mat-icon>
+                    </button>
+                  }
+                  <button
+                    mat-icon-button
+                    type="button"
+                    matTooltip="Modifier"
+                    (click)="openExpenseDialog(e)"
+                  >
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button
+                    mat-icon-button
+                    color="warn"
+                    type="button"
+                    matTooltip="Supprimer"
+                    (click)="deleteExpense(e)"
+                  >
+                    <mat-icon>delete_outline</mat-icon>
+                  </button>
+                </div>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns" class="table-row"></tr>
+
+          </table>
+        </div>
+
+        <mat-paginator
+          [length]="filteredCount()"
+          [pageSize]="pageSize()"
+          [pageIndex]="pageIndex()"
+          [pageSizeOptions]="pageSizeOptions"
+          showFirstLastButtons
+          (page)="onPage($event)"
+        />
+      </div>
+
+      <!-- ── Mobile cards ───────────────────────────────────────────────── -->
+      <div class="mobile-view">
+        @for (e of pagedExpenses(); track trackById($index, e)) {
+          <mat-card class="expense-card">
+
+            <div class="ecard-header">
+              <div class="title-cell">
+                <div class="cat-icon-badge {{ categoryColor(e.category) }}">
+                  <mat-icon>{{ categoryIcon(e.category) }}</mat-icon>
+                </div>
+                <div class="title-stack">
+                  <strong class="title-text">{{ e.title }}</strong>
+                  @if (e.vendor) {
+                    <span class="title-sub">{{ e.vendor }}</span>
+                  }
+                </div>
+              </div>
+              <span class="status-chip {{ statusCss(e.status) }}">{{ statusLabel(e.status) }}</span>
+            </div>
+
+            <div class="ecard-body">
+              <div class="ecard-row">
+                <span class="ecard-label">Catégorie</span>
+                <span class="category-chip {{ categoryColor(e.category) }}">
+                  <mat-icon>{{ categoryIcon(e.category) }}</mat-icon>
+                  {{ categoryLabel(e.category) }}
+                </span>
+              </div>
+              <div class="ecard-row">
+                <span class="ecard-label">Montant</span>
+                <span class="amount-value">{{ formatAmount(e.amount) }}</span>
+              </div>
+              <div class="ecard-row">
+                <span class="ecard-label">Date</span>
+                <div class="date-stack">
+                  <span class="date-main">{{ formatDate(e.date) }}</span>
+                  @if (e.paidDate) {
+                    <span class="date-sub">Payé le {{ formatDate(e.paidDate) }}</span>
+                  }
+                </div>
+              </div>
+              <div class="ecard-row">
+                <span class="ecard-label">Récurrence</span>
+                <span class="recurrence-pill" [class.recurrence-pill--unique]="e.recurrence === 'unique'">
+                  {{ recurrenceLabel(e.recurrence) }}
+                </span>
+              </div>
+            </div>
+
+            <div class="ecard-actions">
+              @if (e.status !== 'payé') {
+                <button mat-stroked-button color="primary" type="button" (click)="markExpenseAsPaid(e)">
+                  <mat-icon>check_circle_outline</mat-icon>
+                  Marquer payé
+                </button>
+              }
+              <button mat-icon-button type="button" matTooltip="Modifier" (click)="openExpenseDialog(e)">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" type="button" matTooltip="Supprimer" (click)="deleteExpense(e)">
+                <mat-icon>delete_outline</mat-icon>
+              </button>
+            </div>
+
+          </mat-card>
+        }
+
+        <mat-paginator
+          [length]="filteredCount()"
+          [pageSize]="pageSize()"
+          [pageIndex]="pageIndex()"
+          [pageSizeOptions]="pageSizeOptions"
+          showFirstLastButtons
+          (page)="onPage($event)"
+        />
+      </div>
+
+    }
+  </mat-card>
+
+</section>

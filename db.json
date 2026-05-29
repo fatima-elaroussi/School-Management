@@ -472,6 +472,35 @@
       "id": "UTjaNDIY4l0"
     }
   ],
-  "expenses": [],
+  "expenses": [
+    {
+      "title": "loyer",
+      "category": "loyer",
+      "amount": 3456,
+      "date": "2026-09-09",
+      "month": "2026-09",
+      "paidDate": "2026-05-29",
+      "status": "payé",
+      "recurrence": "annuel",
+      "method": null,
+      "createdAt": "2026-05-29T14:18:54.315Z",
+      "updatedAt": "2026-05-29T14:19:45.116Z",
+      "id": "fTMWmdMenGk"
+    },
+    {
+      "title": "ddff",
+      "category": "loyer",
+      "amount": 2345,
+      "date": "2026-06-09",
+      "month": "2026-06",
+      "paidDate": null,
+      "status": "en attente",
+      "recurrence": "trimestriel",
+      "method": null,
+      "createdAt": "2026-05-29T15:06:52.927Z",
+      "updatedAt": "2026-05-29T15:06:52.927Z",
+      "id": "GtwKTA06VM4"
+    }
+  ],
   "$schema": "./node_modules/json-server/schema.json"
 }

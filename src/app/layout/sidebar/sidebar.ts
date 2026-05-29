@@ -43,6 +43,7 @@ export class SidebarComponent implements OnDestroy {
     { label: 'Étudiants',        icon: 'groups',                 route: '/students' },
     { label: 'Professeurs',      icon: 'person',                 route: '/teachers' },
     { label: 'Groupes',          icon: 'view_list',              route: '/groups' },
+    { label: 'Finance',          icon: 'bar_chart',              route: '/finance/dashboard' },
     { label: 'Paiements',        icon: 'payments',               route: '/finance/payments' },
     { label: 'Dépenses',         icon: 'account_balance_wallet', route: '/finance/expenses' },
     { label: 'Présences',        icon: 'event_available',        route: '/attendance' },
