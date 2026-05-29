@@ -1,0 +1,256 @@
+<!-- ══ ROOT: formGroup on the <form> so ngSubmit + formControlName work ══ -->
+
+<div class="payment-dialog">
+
+  <!-- ── Header ────────────────────────────────────────────────────────────── -->
+  <header class="dialog-header">
+    <div class="header-content">
+      <div class="header-icon">
+        <mat-icon>payments</mat-icon>
+      </div>
+      <div>
+        <p class="eyebrow">Finance · Paiements</p>
+        <h2 class="dialog-title">{{ dialogTitle }}</h2>
+        <p class="dialog-subtitle">
+          {{ isEditMode
+            ? 'Modifiez les informations de ce paiement.'
+            : 'Enregistrez un nouveau paiement étudiant.' }}
+        </p>
+      </div>
+    </div>
+    <button mat-icon-button type="button" class="close-btn" (click)="cancel()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </header>
+
+  <!-- ═════════════════════════════════════════════════════════════════════
+       [formGroup] MUST be on the <form> element — not a wrapper div.
+       submit events do not bubble, so FormGroupDirective only fires
+       ngSubmit when it is the host of the form element itself.
+       ═════════════════════════════════════════════════════════════════════ -->
+  <form class="dialog-form" [formGroup]="form" (ngSubmit)="save()">
+
+    <!-- ── Section 1 : Étudiant & Type ───────────────────────────────────── -->
+    <div class="form-section">
+      <p class="section-label">
+        <mat-icon>person</mat-icon>
+        Étudiant &amp; Type
+      </p>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Étudiant</mat-label>
+        <mat-icon matPrefix>school</mat-icon>
+        <mat-select formControlName="studentId">
+          @if (students().length === 0) {
+            <mat-option disabled>Chargement…</mat-option>
+          }
+          @for (s of students(); track s.id) {
+            <mat-option [value]="String(s.id)">
+              <div class="student-option">
+                <span class="student-avatar-sm">{{ s.fullName.charAt(0).toUpperCase() }}</span>
+                {{ s.fullName }}
+              </div>
+            </mat-option>
+          }
+        </mat-select>
+        @if (f.studentId.errors?.['required'] && f.studentId.touched) {
+          <mat-error>Sélectionnez un étudiant.</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Type de paiement</mat-label>
+        <mat-icon matPrefix>label</mat-icon>
+        <mat-select formControlName="type">
+          @for (opt of typeOptions; track opt.value) {
+            <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+          }
+        </mat-select>
+        @if (f.type.errors?.['required'] && f.type.touched) {
+          <mat-error>Sélectionnez un type.</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <!-- ── Section 2 : Montant & Mois ────────────────────────────────────── -->
+    <div class="form-section">
+      <p class="section-label">
+        <mat-icon>monetization_on</mat-icon>
+        Montant &amp; Mois
+      </p>
+
+      <div class="form-row-2">
+
+        <!-- Amount -->
+        <mat-form-field appearance="outline">
+          <mat-label>Montant (MAD)</mat-label>
+          <mat-icon matPrefix>monetization_on</mat-icon>
+          <input matInput type="number" formControlName="amount" placeholder="0" min="0" step="0.01" />
+          <span matSuffix>MAD</span>
+          @if (f.amount.errors?.['required'] && f.amount.touched) {
+            <mat-error>Le montant est obligatoire.</mat-error>
+          } @else if (f.amount.errors?.['positiveAmount'] && f.amount.touched) {
+            <mat-error>Le montant doit être supérieur à 0.</mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Month — native <input type="month"> gives a YYYY-MM string directly -->
+        <mat-form-field appearance="outline">
+          <mat-label>Mois concerné</mat-label>
+          <mat-icon matPrefix>calendar_month</mat-icon>
+          <input
+            matInput
+            type="month"
+            formControlName="month"
+            class="month-input"
+          />
+          @if (f.month.errors?.['required'] && f.month.touched) {
+            <mat-error>Le mois est obligatoire.</mat-error>
+          } @else if (f.month.errors?.['pattern'] && f.month.touched) {
+            <mat-error>Format : AAAA-MM (ex. 2026-06)</mat-error>
+          }
+        </mat-form-field>
+
+      </div>
+
+      <!-- Remaining amount live banner -->
+      <div class="remaining-banner" [class.remaining-banner--zero]="remainingAmount() === 0">
+        <div class="remaining-left">
+          <mat-icon>{{ remainingAmount() === 0 ? 'check_circle' : 'pending_actions' }}</mat-icon>
+          <div>
+            <span class="remaining-label">Montant restant dû</span>
+            <span class="remaining-hint">
+              {{ remainingAmount() === 0
+                  ? 'Ce paiement est intégralement soldé.'
+                  : 'Calculé automatiquement selon le statut.' }}
+            </span>
+          </div>
+        </div>
+        <strong class="remaining-value">{{ remainingLabel() }}</strong>
+      </div>
+    </div>
+
+    <!-- ── Section 3 : Statut ─────────────────────────────────────────────── -->
+    <div class="form-section">
+      <p class="section-label">
+        <mat-icon>flag</mat-icon>
+        Statut du paiement
+      </p>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Statut</mat-label>
+        <mat-icon matPrefix>flag</mat-icon>
+        <mat-select formControlName="status">
+          @for (opt of statusOptions; track opt.value) {
+            <mat-option [value]="opt.value">
+              <div class="status-option">
+                <span class="status-dot {{ opt.css }}"></span>
+                {{ opt.label }}
+              </div>
+            </mat-option>
+          }
+        </mat-select>
+        @if (f.status.errors?.['required'] && f.status.touched) {
+          <mat-error>Sélectionnez un statut.</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Payment details — only when status = payé ──────────────────────── -->
+      @if (showPaymentDetails()) {
+        <div class="payment-details-panel">
+          <p class="details-heading">
+            <mat-icon>check_circle</mat-icon>
+            Détails du règlement
+          </p>
+
+          <div class="form-row-2">
+
+            <mat-form-field appearance="outline">
+              <mat-label>Moyen de paiement</mat-label>
+              <mat-icon matPrefix>credit_card</mat-icon>
+              <mat-select formControlName="method">
+                @for (opt of methodOptions; track opt.value) {
+                  <mat-option [value]="opt.value">
+                    <div class="method-option">
+                      <mat-icon class="method-icon">{{ opt.icon }}</mat-icon>
+                      {{ opt.label }}
+                    </div>
+                  </mat-option>
+                }
+              </mat-select>
+              @if (f.method.errors?.['required'] && f.method.touched) {
+                <mat-error>Le moyen de paiement est requis.</mat-error>
+              }
+            </mat-form-field>
+
+            <!-- paidDate — MatDatepicker with provideNativeDateAdapter() -->
+            <mat-form-field appearance="outline">
+              <mat-label>Date de paiement</mat-label>
+              <mat-icon matPrefix>event_available</mat-icon>
+              <!--
+                No [readonly] here — readonly blocks MatDatepickerInput from
+                properly registering touch/value events in some browsers.
+                The datepicker toggle opens the calendar; direct typing is
+                also accepted and validated by MatNativeDateAdapter.
+              -->
+              <input
+                matInput
+                [matDatepicker]="paidDatePicker"
+                formControlName="paidDate"
+                placeholder="JJ/MM/AAAA"
+              />
+              <mat-datepicker-toggle matIconSuffix [for]="paidDatePicker" />
+              <mat-datepicker #paidDatePicker />
+              @if (f.paidDate.errors?.['required'] && f.paidDate.touched) {
+                <mat-error>La date de paiement est requise.</mat-error>
+              }
+            </mat-form-field>
+
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- ── Section 4 : Notes ─────────────────────────────────────────────── -->
+    <div class="form-section">
+      <p class="section-label">
+        <mat-icon>notes</mat-icon>
+        Notes
+        <span class="section-optional">(optionnel)</span>
+      </p>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Commentaires</mat-label>
+        <textarea matInput formControlName="notes" rows="3" placeholder="Informations complémentaires…"></textarea>
+        <mat-hint align="end">{{ notesLength }} / 500</mat-hint>
+        @if (f.notes.errors?.['maxlength'] && f.notes.touched) {
+          <mat-error>Maximum 500 caractères.</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <!-- ── Footer ─────────────────────────────────────────────────────────── -->
+    <footer class="dialog-footer">
+      <button mat-stroked-button type="button" (click)="cancel()">
+        Annuler
+      </button>
+
+      <button
+        mat-flat-button
+        color="primary"
+        type="submit"
+        [disabled]="saveLoading()"
+        class="save-btn"
+      >
+        @if (saveLoading()) {
+          <mat-progress-spinner diameter="18" mode="indeterminate" />
+          <span>Enregistrement…</span>
+        } @else {
+          <mat-icon>{{ isEditMode ? 'save' : 'add_circle' }}</mat-icon>
+          <span>{{ isEditMode ? 'Enregistrer les modifications' : 'Enregistrer le paiement' }}</span>
+        }
+      </button>
+    </footer>
+
+  </form>
+</div>

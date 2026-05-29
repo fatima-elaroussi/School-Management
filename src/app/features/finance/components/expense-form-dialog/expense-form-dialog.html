@@ -1,0 +1,234 @@
+<div class="expense-dialog" [formGroup]="form">
+
+  <!-- ── Header ────────────────────────────────────────────────────────────── -->
+  <header class="dialog-header">
+    <div class="header-content">
+      <div class="header-icon">
+        <mat-icon>account_balance_wallet</mat-icon>
+      </div>
+      <div>
+        <p class="eyebrow">Finance · Dépenses</p>
+        <h2 class="dialog-title">{{ dialogTitle }}</h2>
+        <p class="dialog-subtitle">
+          {{ isEditMode
+            ? 'Modifiez les informations de cette dépense.'
+            : 'Enregistrez une nouvelle dépense opérationnelle.' }}
+        </p>
+      </div>
+    </div>
+    <button mat-icon-button type="button" class="close-btn" (click)="cancel()" aria-label="Fermer">
+      <mat-icon>close</mat-icon>
+    </button>
+  </header>
+
+  <form class="dialog-form" (ngSubmit)="save()">
+
+    <!-- ── Section: Informations générales ───────────────────────────────── -->
+    <div class="form-section">
+      <p class="section-label">
+        <mat-icon>info</mat-icon>
+        Informations générales
+      </p>
+
+      <!-- Title -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Titre de la dépense</mat-label>
+        <mat-icon matPrefix>title</mat-icon>
+        <input
+          matInput
+          formControlName="title"
+          placeholder="ex. Loyer — Juin 2026"
+          autocomplete="off"
+        />
+        @if (f.title.errors?.['required'] && f.title.touched) {
+          <mat-error>Le titre est obligatoire.</mat-error>
+        } @else if (f.title.errors?.['minlength'] && f.title.touched) {
+          <mat-error>Minimum 3 caractères.</mat-error>
+        } @else if (f.title.errors?.['maxlength'] && f.title.touched) {
+          <mat-error>Maximum 120 caractères.</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Category + Recurrence -->
+      <div class="form-row-2">
+        <mat-form-field appearance="outline">
+          <mat-label>Catégorie</mat-label>
+          <mat-icon matPrefix>category</mat-icon>
+          <mat-select formControlName="category">
+            @for (opt of categoryOptions; track opt.value) {
+              <mat-option [value]="opt.value">
+                <div class="select-option">
+                  <mat-icon class="opt-icon">{{ opt.icon }}</mat-icon>
+                  {{ opt.label }}
+                </div>
+              </mat-option>
+            }
+          </mat-select>
+          @if (f.category.errors?.['required'] && f.category.touched) {
+            <mat-error>Sélectionnez une catégorie.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Récurrence</mat-label>
+          <mat-icon matPrefix>repeat</mat-icon>
+          <mat-select formControlName="recurrence">
+            @for (opt of recurrenceOptions; track opt.value) {
+              <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+            }
+          </mat-select>
+          @if (f.recurrence.errors?.['required'] && f.recurrence.touched) {
+            <mat-error>Sélectionnez une récurrence.</mat-error>
+          }
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- ── Section: Montant & Date ────────────────────────────────────────── -->
+    <div class="form-section">
+      <p class="section-label">
+        <mat-icon>payments</mat-icon>
+        Montant &amp; Date
+      </p>
+
+      <div class="form-row-2">
+        <!-- Amount -->
+        <mat-form-field appearance="outline">
+          <mat-label>Montant (MAD)</mat-label>
+          <mat-icon matPrefix>monetization_on</mat-icon>
+          <input
+            matInput
+            type="number"
+            formControlName="amount"
+            placeholder="0"
+            min="0"
+            step="0.01"
+          />
+          <span matSuffix>MAD</span>
+          @if (f.amount.errors?.['required'] && f.amount.touched) {
+            <mat-error>Le montant est obligatoire.</mat-error>
+          } @else if (f.amount.errors?.['positiveAmount'] && f.amount.touched) {
+            <mat-error>Le montant doit être supérieur à 0.</mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Date -->
+        <mat-form-field appearance="outline">
+          <mat-label>Date de la dépense</mat-label>
+          <mat-icon matPrefix>event</mat-icon>
+          <input
+            matInput
+            [matDatepicker]="datePicker"
+            formControlName="date"
+            placeholder="JJ/MM/AAAA"
+            readonly
+          />
+          <mat-datepicker-toggle matSuffix [for]="datePicker" />
+          <mat-datepicker #datePicker />
+          @if (f.date.errors?.['required'] && f.date.touched) {
+            <mat-error>La date est obligatoire.</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <!-- Payment method -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Moyen de paiement</mat-label>
+        <mat-icon matPrefix>credit_card</mat-icon>
+        <mat-select formControlName="method">
+          <mat-option [value]="null">— Non spécifié —</mat-option>
+          @for (opt of methodOptions; track opt.value) {
+            <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+          }
+        </mat-select>
+        <mat-hint>Optionnel — à renseigner une fois le paiement effectué.</mat-hint>
+      </mat-form-field>
+    </div>
+
+    <!-- ── Section: Référence & Fournisseur ──────────────────────────────── -->
+    <div class="form-section">
+      <p class="section-label">
+        <mat-icon>receipt_long</mat-icon>
+        Référence &amp; Fournisseur
+        <span class="section-optional">(optionnel)</span>
+      </p>
+
+      <div class="form-row-2">
+        <mat-form-field appearance="outline">
+          <mat-label>Fournisseur / Bénéficiaire</mat-label>
+          <mat-icon matPrefix>store</mat-icon>
+          <input
+            matInput
+            formControlName="vendor"
+            placeholder="ex. Maroc Telecom"
+            autocomplete="off"
+          />
+          @if (f.vendor.errors?.['maxlength'] && f.vendor.touched) {
+            <mat-error>Maximum 100 caractères.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>N° Facture / Référence</mat-label>
+          <mat-icon matPrefix>tag</mat-icon>
+          <input
+            matInput
+            formControlName="reference"
+            placeholder="ex. FACT-2026-0042"
+            autocomplete="off"
+          />
+          @if (f.reference.errors?.['maxlength'] && f.reference.touched) {
+            <mat-error>Maximum 60 caractères.</mat-error>
+          }
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- ── Section: Notes ─────────────────────────────────────────────────── -->
+    <div class="form-section">
+      <p class="section-label">
+        <mat-icon>notes</mat-icon>
+        Notes
+        <span class="section-optional">(optionnel)</span>
+      </p>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Notes ou commentaires</mat-label>
+        <textarea
+          matInput
+          formControlName="notes"
+          rows="3"
+          placeholder="Informations complémentaires…"
+        ></textarea>
+        <mat-hint align="end">{{ notesLength }} / 500</mat-hint>
+        @if (f.notes.errors?.['maxlength'] && f.notes.touched) {
+          <mat-error>Maximum 500 caractères.</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <!-- ── Footer actions ─────────────────────────────────────────────────── -->
+    <footer class="dialog-footer">
+      <button mat-stroked-button type="button" (click)="cancel()">
+        Annuler
+      </button>
+
+      <button
+        mat-flat-button
+        color="primary"
+        type="submit"
+        [disabled]="saveLoading()"
+        class="save-btn"
+      >
+        @if (saveLoading()) {
+          <mat-progress-spinner diameter="18" mode="indeterminate" />
+          <span>Enregistrement…</span>
+        } @else {
+          <mat-icon>{{ isEditMode ? 'save' : 'add_circle' }}</mat-icon>
+          <span>{{ isEditMode ? 'Enregistrer les modifications' : 'Créer la dépense' }}</span>
+        }
+      </button>
+    </footer>
+
+  </form>
+</div>

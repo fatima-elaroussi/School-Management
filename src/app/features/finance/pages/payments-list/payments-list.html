@@ -1,0 +1,359 @@
+<section class="payments-page">
+
+  <!-- ── Page header ──────────────────────────────────────────────────────── -->
+  <header class="page-header">
+    <div class="page-title-group">
+      <p class="eyebrow">Finance · Paiements</p>
+      <h1>Gestion des paiements</h1>
+      <p class="page-description">
+        Suivez les mensualités, consultez les statuts et gérez les encaissements des étudiants.
+      </p>
+    </div>
+    <button mat-flat-button color="primary" type="button" (click)="openPaymentDialog()">
+      <mat-icon>add</mat-icon>
+      Nouveau paiement
+    </button>
+  </header>
+
+  <!-- ── KPI strip ────────────────────────────────────────────────────────── -->
+  <div class="kpi-strip">
+    <div class="kpi-card">
+      <div class="kpi-icon kpi-icon--total">
+        <mat-icon>receipt_long</mat-icon>
+      </div>
+      <div class="kpi-body">
+        <span class="kpi-label">Total</span>
+        <strong class="kpi-value">{{ totalCount() }}</strong>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-icon kpi-icon--paid">
+        <mat-icon>check_circle</mat-icon>
+      </div>
+      <div class="kpi-body">
+        <span class="kpi-label">Payés</span>
+        <strong class="kpi-value">{{ summary().paid }}</strong>
+        <span class="kpi-sub">{{ formatAmount(summary().collectedAmount) }}</span>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-icon kpi-icon--pending">
+        <mat-icon>schedule</mat-icon>
+      </div>
+      <div class="kpi-body">
+        <span class="kpi-label">En attente</span>
+        <strong class="kpi-value">{{ summary().pending }}</strong>
+        <span class="kpi-sub">{{ formatAmount(summary().pendingAmount) }}</span>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-icon kpi-icon--overdue">
+        <mat-icon>warning_amber</mat-icon>
+      </div>
+      <div class="kpi-body">
+        <span class="kpi-label">En retard</span>
+        <strong class="kpi-value">{{ summary().overdue }}</strong>
+      </div>
+    </div>
+
+    <div class="kpi-card kpi-card--wide">
+      <div class="kpi-icon kpi-icon--amount">
+        <mat-icon>account_balance_wallet</mat-icon>
+      </div>
+      <div class="kpi-body">
+        <span class="kpi-label">Montant total</span>
+        <strong class="kpi-value kpi-value--lg">{{ formatAmount(summary().totalAmount) }}</strong>
+        <span class="kpi-sub">dont {{ formatAmount(summary().pendingAmount) }} restants</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Table card ───────────────────────────────────────────────────────── -->
+  <mat-card class="table-card">
+
+    <!-- Filter bar -->
+    <div class="filter-bar">
+      <mat-form-field appearance="outline" class="filter-field search-field">
+        <mat-label>Rechercher un étudiant</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput placeholder="Nom de l'étudiant…" [(ngModel)]="search" />
+        @if (search) {
+          <button mat-icon-button matSuffix type="button" (click)="search = ''">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Statut</mat-label>
+        <mat-select [(ngModel)]="statusFilter">
+          @for (opt of statusOptions; track opt.value) {
+            <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Moyen de paiement</mat-label>
+        <mat-select [(ngModel)]="methodFilter">
+          @for (opt of methodOptions; track opt.value) {
+            <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <div class="filter-meta">
+        <span class="filter-count">{{ filteredCount() }} résultat(s)</span>
+        <span class="filter-page">Page {{ pageIndex() + 1 }} / {{ pageCount() }}</span>
+        @if (hasActiveFilter()) {
+          <button mat-button type="button" color="primary" (click)="clearFilters()">
+            <mat-icon>filter_alt_off</mat-icon>
+            Réinitialiser
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- States -->
+    @if (loading()) {
+      <div class="state-panel">
+        <mat-progress-spinner diameter="52" mode="indeterminate" />
+        <p>Chargement des paiements…</p>
+      </div>
+    } @else if (loadError()) {
+      <div class="state-panel">
+        <mat-icon class="state-icon state-icon--error">cloud_off</mat-icon>
+        <h2>Erreur de chargement</h2>
+        <p>Vérifiez que le serveur est démarré, puis réessayez.</p>
+        <button mat-flat-button color="primary" (click)="loadAll()">Réessayer</button>
+      </div>
+    } @else if (totalCount() === 0) {
+      <div class="state-panel">
+        <mat-icon class="state-icon">payments</mat-icon>
+        <h2>Aucun paiement enregistré</h2>
+        <p>Créez le premier paiement pour commencer le suivi financier.</p>
+        <button mat-flat-button color="primary" (click)="openPaymentDialog()">
+          <mat-icon>add</mat-icon>
+          Nouveau paiement
+        </button>
+      </div>
+    } @else if (filteredCount() === 0) {
+      <div class="state-panel">
+        <mat-icon class="state-icon">search_off</mat-icon>
+        <h2>Aucun résultat</h2>
+        <p>Aucun paiement ne correspond aux filtres actifs.</p>
+        <button mat-stroked-button type="button" (click)="clearFilters()">Réinitialiser</button>
+      </div>
+    } @else {
+
+      <!-- ── Desktop table ──────────────────────────────────────────────── -->
+      <div class="desktop-view">
+        <div class="table-wrapper">
+          <table mat-table [dataSource]="dataSource" class="payments-table">
+
+            <!-- Student -->
+            <ng-container matColumnDef="student">
+              <th mat-header-cell *matHeaderCellDef>Étudiant</th>
+              <td mat-cell *matCellDef="let p">
+                <div class="student-cell">
+                  <div class="student-avatar">
+                    {{ getStudentName(p.studentId).charAt(0).toUpperCase() }}
+                  </div>
+                  <span class="student-name">{{ getStudentName(p.studentId) }}</span>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Amount -->
+            <ng-container matColumnDef="amount">
+              <th mat-header-cell *matHeaderCellDef>Montant</th>
+              <td mat-cell *matCellDef="let p">
+                <span class="amount-value">{{ formatAmount(p.amount) }}</span>
+              </td>
+            </ng-container>
+
+            <!-- Month -->
+            <ng-container matColumnDef="month">
+              <th mat-header-cell *matHeaderCellDef>Mois</th>
+              <td mat-cell *matCellDef="let p">
+                <span class="month-pill">{{ p.month }}</span>
+              </td>
+            </ng-container>
+
+            <!-- Status -->
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Statut</th>
+              <td mat-cell *matCellDef="let p">
+                <span class="status-chip {{ statusColor(p.status) }}">
+                  @switch (p.status) {
+                    @case ('payé')       { <mat-icon>check_circle</mat-icon> }
+                    @case ('en attente') { <mat-icon>schedule</mat-icon> }
+                    @case ('en retard')  { <mat-icon>warning_amber</mat-icon> }
+                    @case ('annulé')     { <mat-icon>cancel</mat-icon> }
+                  }
+                  {{ statusLabel(p.status) }}
+                </span>
+              </td>
+            </ng-container>
+
+            <!-- Remaining -->
+            <ng-container matColumnDef="remaining">
+              <th mat-header-cell *matHeaderCellDef>Reste dû</th>
+              <td mat-cell *matCellDef="let p">
+                @if (getRemaining(p) === 0) {
+                  <span class="remaining-zero">—</span>
+                } @else {
+                  <span class="remaining-amount">{{ formatAmount(getRemaining(p)) }}</span>
+                }
+              </td>
+            </ng-container>
+
+            <!-- Method -->
+            <ng-container matColumnDef="method">
+              <th mat-header-cell *matHeaderCellDef>Moyen</th>
+              <td mat-cell *matCellDef="let p">
+                <div class="method-cell">
+                  <mat-icon class="method-icon">{{ methodIcon(p.method) }}</mat-icon>
+                  {{ methodLabel(p.method) }}
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Paid date -->
+            <ng-container matColumnDef="paidDate">
+              <th mat-header-cell *matHeaderCellDef>Date paiement</th>
+              <td mat-cell *matCellDef="let p">
+                <span class="date-value">{{ formatDate(p.paidDate) }}</span>
+              </td>
+            </ng-container>
+
+            <!-- Actions -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef></th>
+              <td mat-cell *matCellDef="let p">
+                <div class="action-btns">
+                  @if (p.status !== 'payé') {
+                    <button
+                      mat-icon-button
+                      color="primary"
+                      type="button"
+                      matTooltip="Marquer comme payé"
+                      (click)="markAsPaid(p)"
+                    >
+                      <mat-icon>check_circle_outline</mat-icon>
+                    </button>
+                  }
+                  <button
+                    mat-icon-button
+                    type="button"
+                    matTooltip="Modifier"
+                    (click)="openPaymentDialog(p)"
+                  >
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button
+                    mat-icon-button
+                    color="warn"
+                    type="button"
+                    matTooltip="Supprimer"
+                    (click)="deletePayment(p)"
+                  >
+                    <mat-icon>delete_outline</mat-icon>
+                  </button>
+                </div>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns" class="table-row"></tr>
+          </table>
+        </div>
+
+        <mat-paginator
+          [length]="filteredCount()"
+          [pageSize]="pageSize()"
+          [pageIndex]="pageIndex()"
+          [pageSizeOptions]="pageSizeOptions"
+          showFirstLastButtons
+          (page)="onPage($event)"
+        />
+      </div>
+
+      <!-- ── Mobile cards ───────────────────────────────────────────────── -->
+      <div class="mobile-view">
+        @for (p of pagedPayments(); track trackById($index, p)) {
+          <mat-card class="payment-card">
+            <div class="pcard-header">
+              <div class="student-cell">
+                <div class="student-avatar">
+                  {{ getStudentName(p.studentId).charAt(0).toUpperCase() }}
+                </div>
+                <div>
+                  <strong class="student-name">{{ getStudentName(p.studentId) }}</strong>
+                  <span class="month-pill month-pill--sm">{{ p.month }}</span>
+                </div>
+              </div>
+              <span class="status-chip {{ statusColor(p.status) }}">
+                {{ statusLabel(p.status) }}
+              </span>
+            </div>
+
+            <div class="pcard-body">
+              <div class="pcard-row">
+                <span class="pcard-label">Montant</span>
+                <span class="amount-value">{{ formatAmount(p.amount) }}</span>
+              </div>
+              <div class="pcard-row">
+                <span class="pcard-label">Reste dû</span>
+                @if (getRemaining(p) === 0) {
+                  <span class="remaining-zero">—</span>
+                } @else {
+                  <span class="remaining-amount">{{ formatAmount(getRemaining(p)) }}</span>
+                }
+              </div>
+              <div class="pcard-row">
+                <span class="pcard-label">Moyen</span>
+                <div class="method-cell">
+                  <mat-icon class="method-icon">{{ methodIcon(p.method) }}</mat-icon>
+                  {{ methodLabel(p.method) }}
+                </div>
+              </div>
+              <div class="pcard-row">
+                <span class="pcard-label">Date</span>
+                <span class="date-value">{{ formatDate(p.paidDate) }}</span>
+              </div>
+            </div>
+
+            <div class="pcard-actions">
+              @if (p.status !== 'payé') {
+                <button mat-stroked-button color="primary" type="button" (click)="markAsPaid(p)">
+                  <mat-icon>check_circle_outline</mat-icon>
+                  Marquer payé
+                </button>
+              }
+              <button mat-icon-button type="button" matTooltip="Modifier" (click)="openPaymentDialog(p)">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" type="button" matTooltip="Supprimer" (click)="deletePayment(p)">
+                <mat-icon>delete_outline</mat-icon>
+              </button>
+            </div>
+          </mat-card>
+        }
+
+        <mat-paginator
+          [length]="filteredCount()"
+          [pageSize]="pageSize()"
+          [pageIndex]="pageIndex()"
+          [pageSizeOptions]="pageSizeOptions"
+          showFirstLastButtons
+          (page)="onPage($event)"
+        />
+      </div>
+
+    }
+  </mat-card>
+</section>

@@ -5,4 +5,6 @@ export const API_ENDPOINTS = {
   levels: `${API_BASE_URL}/levels`,
   subjects: `${API_BASE_URL}/subjects`,
   groups: `${API_BASE_URL}/groups`,
+  payments: `${API_BASE_URL}/payments`,
+  expenses: `${API_BASE_URL}/expenses`,
 } as const;

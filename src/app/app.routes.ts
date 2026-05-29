@@ -57,6 +57,30 @@ export const routes: Routes = [
           import('./features/groups/pages/groups-list/groups-list').then((m) => m.GroupsList),
       },
       {
+        path: 'finance',
+        children: [
+          {
+            path: '',
+            redirectTo: 'payments',
+            pathMatch: 'full',
+          },
+          {
+            path: 'payments',
+            loadComponent: () =>
+              import('./features/finance/pages/payments-list/payments-list').then(
+                (m) => m.PaymentsList,
+              ),
+          },
+          {
+            path: 'expenses',
+            loadComponent: () =>
+              import('./features/finance/pages/expenses-list/expenses-list').then(
+                (m) => m.ExpensesList,
+              ),
+          },
+        ],
+      },
+      {
         path: '**',
         redirectTo: 'dashboard',
       },

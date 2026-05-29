@@ -446,6 +446,32 @@
       "id": "eTgekhyEPs8"
     }
   ],
-  "payments": [],
+  "payments": [
+    {
+      "studentId": "1",
+      "type": "mensualité",
+      "amount": 12345,
+      "month": "2026-10",
+      "dueDate": "2026-09-01",
+      "status": "en attente",
+      "method": null,
+      "paidDate": null,
+      "createdAt": "2026-05-29T13:55:08.318Z",
+      "id": "-E2LXkLNRck"
+    },
+    {
+      "studentId": "4",
+      "type": "inscription",
+      "amount": 700,
+      "month": "2026-05",
+      "dueDate": "2026-05-01",
+      "status": "en attente",
+      "method": null,
+      "paidDate": null,
+      "createdAt": "2026-05-29T13:55:45.786Z",
+      "id": "UTjaNDIY4l0"
+    }
+  ],
+  "expenses": [],
   "$schema": "./node_modules/json-server/schema.json"
 }
