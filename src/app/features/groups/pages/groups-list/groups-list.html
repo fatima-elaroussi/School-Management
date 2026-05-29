@@ -89,6 +89,15 @@
         <mat-progress-spinner diameter="56" mode="indeterminate"></mat-progress-spinner>
         <p>Loading groups…</p>
       </div>
+    } @else if (loadError()) {
+      <div class="state-panel empty-state">
+        <mat-icon>cloud_off</mat-icon>
+        <h2>Could not load groups</h2>
+        <p>Make sure the backend server is running, then try again.</p>
+        <button mat-flat-button color="primary" type="button" (click)="loadGroups()">
+          Retry
+        </button>
+      </div>
     } @else if (totalGroups() === 0) {
       <div class="state-panel empty-state">
         <mat-icon>groups</mat-icon>

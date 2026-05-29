@@ -357,24 +357,23 @@
       "id": "of28peyOsrw"
     },
     {
-      "fullName": "test",
-      "email": "test@gmail.com",
-      "phone": "234567890",
+      "fullName": "dfghjk",
+      "email": "xvgfghn@gmail.com",
+      "phone": "12345678",
       "subjects": [
-        "Physics",
-        "Biology"
+        "Mathématiques"
       ],
       "schoolLevels": [
-        "Vocational"
+        "1ère année collège"
       ],
-      "salary": 7890,
+      "salary": 456,
       "groups": [
-        "BACA"
+        "groupeA"
       ],
-      "hireDate": "2026-05-25",
+      "hireDate": "2026-05-29",
       "paymentStatus": "en attente",
       "notes": "",
-      "id": "hBtqgCSeCMA"
+      "id": "QZfeZmfDfb8"
     }
   ],
   "levels": [
@@ -411,10 +410,28 @@
   ],
   "groups": [
     {
-      "name": "test",
+      "name": "testzz",
+      "subjectId": 2,
+      "schoolLevelId": 2,
+      "teacherId": 2,
+      "room": "salle 1",
+      "maxStudents": 20,
+      "studentIds": [],
+      "schedules": [
+        {
+          "day": "Mercredi",
+          "startTime": "18:00",
+          "endTime": "20:00"
+        }
+      ],
+      "createdAt": "2026-05-26",
+      "id": "fsZs4dF1Dn8"
+    },
+    {
+      "name": "test 2",
       "subjectId": 1,
       "schoolLevelId": 1,
-      "teacherId": null,
+      "teacherId": 2,
       "room": "salle 1",
       "maxStudents": 20,
       "studentIds": [],
@@ -425,8 +442,8 @@
           "endTime": "20:00"
         }
       ],
-      "createdAt": "2026-05-26",
-      "id": "fsZs4dF1Dn8"
+      "createdAt": "2026-05-29",
+      "id": "eTgekhyEPs8"
     }
   ],
   "payments": [],

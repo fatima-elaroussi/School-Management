@@ -19,7 +19,7 @@
     <div class="form-grid">
       <mat-form-field appearance="outline">
         <mat-label>Subject</mat-label>
-        <mat-select formControlName="subjectId" [disabled]="lookupsLoading()">
+        <mat-select formControlName="subjectId" [disabled]="lookupsLoading()" [compareWith]="compareById">
           @for (option of subjectOptions(); track option.value) {
             <mat-option [value]="option.value">{{ option.label }}</mat-option>
           }
@@ -28,7 +28,7 @@
 
       <mat-form-field appearance="outline">
         <mat-label>School level</mat-label>
-        <mat-select formControlName="schoolLevelId" [disabled]="lookupsLoading()">
+        <mat-select formControlName="schoolLevelId" [disabled]="lookupsLoading()" [compareWith]="compareById">
           @for (option of levelOptions(); track option.value) {
             <mat-option [value]="option.value">{{ option.label }}</mat-option>
           }
@@ -37,7 +37,7 @@
 
       <mat-form-field appearance="outline">
         <mat-label>Teacher</mat-label>
-        <mat-select formControlName="teacherId">
+        <mat-select formControlName="teacherId" [compareWith]="compareById">
           @for (teacher of teachers(); track teacher.id) {
             <mat-option [value]="teacher.id">{{ teacher.fullName }}</mat-option>
           }

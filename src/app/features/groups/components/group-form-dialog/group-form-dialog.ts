@@ -52,6 +52,9 @@ export class GroupFormDialog {
   readonly lookupsLoading = this.lookups.anyLoading;
   readonly days = DAYS;
 
+  compareById = (a: number | string | null, b: number | string | null): boolean =>
+    Number(a) === Number(b);
+
   readonly subjectOptions = this.lookups.subjectOptions;
   readonly levelOptions = this.lookups.levelOptions;
 

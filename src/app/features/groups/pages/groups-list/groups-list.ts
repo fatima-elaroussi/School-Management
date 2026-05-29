@@ -51,6 +51,7 @@ export class GroupsList {
   private readonly snackBar = inject(MatSnackBar);
 
   readonly loading = signal(true);
+  readonly loadError = signal(false);
   readonly groups = signal<Group[]>([]);
   readonly teachers = signal<Teacher[]>([]);
   readonly searchSignal = signal('');
@@ -140,11 +141,11 @@ export class GroupsList {
 
     return this.groups().filter((group) => {
       const matchesSubject =
-        subjectFilter === 'all' || group.subjectId === subjectFilter;
+        subjectFilter === 'all' || Number(group.subjectId) === Number(subjectFilter);
       const matchesLevel =
-        levelFilter === 'all' || group.schoolLevelId === levelFilter;
+        levelFilter === 'all' || Number(group.schoolLevelId) === Number(levelFilter);
       const matchesTeacher =
-        teacherFilter === 'all' || group.teacherId === teacherFilter;
+        teacherFilter === 'all' || Number(group.teacherId) === Number(teacherFilter);
 
       if (!matchesSubject || !matchesLevel || !matchesTeacher) {
         return false;
@@ -188,6 +189,7 @@ export class GroupsList {
 
   loadGroups(): void {
     this.loading.set(true);
+    this.loadError.set(false);
     this.groupsService.getGroups().subscribe({
       next: (groups) => {
         this.groups.set(groups ?? []);
@@ -197,7 +199,7 @@ export class GroupsList {
       error: () => {
         this.groups.set([]);
         this.dataSource.data = [];
-        this.snackBar.open('Unable to load groups.', 'Close', { duration: 3000 });
+        this.loadError.set(true);
         this.loading.set(false);
       },
       complete: () => {

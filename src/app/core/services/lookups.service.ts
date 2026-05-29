@@ -59,11 +59,11 @@ export class LookupsService {
   readonly subjectNameById = computed(() => this.buildNameMap(this.subjects()));
 
   readonly levelOptions = computed<LookupOption[]>(() =>
-    this.levels().map((level) => ({ value: level.id, label: level.name })),
+    this.levels().map((level) => ({ value: Number(level.id), label: level.name })),
   );
 
   readonly subjectOptions = computed<LookupOption[]>(() =>
-    this.subjects().map((subject) => ({ value: subject.id, label: subject.name })),
+    this.subjects().map((subject) => ({ value: Number(subject.id), label: subject.name })),
   );
 
   /** Sorted level names for string-based forms (students, teachers). */
@@ -278,8 +278,8 @@ export class LookupsService {
     this.subjectsState.update((state) => ({ ...state, ...patch }));
   }
 
-  private buildNameMap<T extends { id: number; name: string }>(items: T[]): Record<number, string> {
-    return Object.fromEntries(items.map((item) => [item.id, item.name]));
+  private buildNameMap<T extends { id: number | string; name: string }>(items: T[]): Record<number, string> {
+    return Object.fromEntries(items.map((item) => [Number(item.id), item.name]));
   }
 
   private sortNames(names: string[]): string[] {
