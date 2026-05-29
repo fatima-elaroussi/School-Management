@@ -1,4 +1,6 @@
 <section class="levels-page">
+
+  <!-- ── Header ──────────────────────────────────────────────────────────────── -->
   <header class="page-header-row">
     <div>
       <p class="page-eyebrow">Niveaux scolaires</p>
@@ -13,38 +15,68 @@
     </button>
   </header>
 
-  <div class="filter-bar">
-    <mat-form-field appearance="outline" class="filter-field search-field">
-      <mat-label>Rechercher</mat-label>
-      <mat-icon matPrefix>search</mat-icon>
-      <input matInput placeholder="Nom, catégorie ou description…" [(ngModel)]="search" />
-      <button mat-icon-button matSuffix *ngIf="search" type="button" (click)="search = ''">
-        <mat-icon>close</mat-icon>
-      </button>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="filter-field">
-      <mat-label>Catégorie</mat-label>
-      <mat-select [(ngModel)]="categoryFilter">
-        <mat-option *ngFor="let opt of categoryOptions" [value]="opt.value">{{ opt.label }}</mat-option>
-      </mat-select>
-    </mat-form-field>
-
-    <div class="filter-meta">
-      <span class="filter-count">{{ totalLevels() }} niveau(x)</span>
-      <span class="filter-page">Page {{ pageIndex() + 1 }} / {{ pageCount() }}</span>
+  <!-- ── Stats strip ─────────────────────────────────────────────────────────── -->
+  <div class="stats-strip">
+    <div class="stat-card">
+      <div class="stat-icon stat-icon--primary"><mat-icon>school</mat-icon></div>
+      <div class="stat-body">
+        <div class="stat-value">{{ totalLevels() }}</div>
+        <div class="stat-label">Total niveaux</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon stat-icon--accent"><mat-icon>filter_list</mat-icon></div>
+      <div class="stat-body">
+        <div class="stat-value">{{ filteredLevels().length }}</div>
+        <div class="stat-label">Résultats filtrés</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon stat-icon--info"><mat-icon>category</mat-icon></div>
+      <div class="stat-body">
+        <div class="stat-value">{{ categoryOptions.length - 1 }}</div>
+        <div class="stat-label">Catégories</div>
+      </div>
     </div>
   </div>
 
-  <div class="content-panel">
-    <div *ngIf="loading(); else levelsContent" class="state-panel loading-state">
+  <!-- ── Table card ──────────────────────────────────────────────────────────── -->
+  <div class="table-card">
+
+    <!-- Filter bar -->
+    <div class="filter-bar">
+      <mat-form-field appearance="outline" class="filter-field search-field">
+        <mat-label>Rechercher</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput placeholder="Nom, catégorie ou description…" [(ngModel)]="search" />
+        <button mat-icon-button matSuffix *ngIf="search" type="button" (click)="search = ''">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Catégorie</mat-label>
+        <mat-select [(ngModel)]="categoryFilter">
+          <mat-option *ngFor="let opt of categoryOptions" [value]="opt.value">{{ opt.label }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="filter-meta">
+        <span class="filter-count">{{ totalLevels() }} niveau(x)</span>
+        <span class="filter-page">Page {{ pageIndex() + 1 }} / {{ pageCount() }}</span>
+      </div>
+    </div>
+
+    <!-- States -->
+    <div *ngIf="loading()" class="state-panel">
       <mat-progress-spinner diameter="40" mode="indeterminate"></mat-progress-spinner>
       <p>Chargement des niveaux…</p>
     </div>
 
-    <ng-template #levelsContent>
-      <div *ngIf="pagedLevels().length > 0; else emptyState">
+    <ng-template [ngIf]="!loading()">
+      <ng-container *ngIf="pagedLevels().length > 0; else emptyState">
 
+        <!-- Desktop table -->
         <div class="desktop-table">
           <table mat-table [dataSource]="dataSource">
             <ng-container matColumnDef="name">
@@ -66,7 +98,7 @@
 
             <ng-container matColumnDef="actions">
               <th mat-header-cell *matHeaderCellDef></th>
-              <td mat-cell *matCellDef="let level" class="actions-cell">
+              <td mat-cell *matCellDef="let level">
                 <div class="action-btns">
                   <button mat-icon-button matTooltip="Modifier" type="button" (click)="openLevelDialog(level)">
                     <mat-icon>edit</mat-icon>
@@ -92,8 +124,9 @@
           ></mat-paginator>
         </div>
 
+        <!-- Mobile cards -->
         <div class="mobile-cards">
-          <mat-card class="level-card" *ngFor="let level of pagedLevels(); trackBy: trackById">
+          <div class="level-card" *ngFor="let level of pagedLevels(); trackBy: trackById">
             <div class="card-header">
               <div>
                 <strong>{{ level.name }}</strong>
@@ -109,12 +142,13 @@
               </div>
             </div>
             <p class="level-description">{{ level.description || 'Aucune description fournie.' }}</p>
-          </mat-card>
+          </div>
         </div>
-      </div>
+
+      </ng-container>
 
       <ng-template #emptyState>
-        <div class="state-panel empty-state">
+        <div class="state-panel">
           <mat-icon>search_off</mat-icon>
           <h2>Aucun niveau trouvé</h2>
           <p>Ajustez les filtres ou ajoutez un nouveau niveau scolaire.</p>
@@ -124,5 +158,6 @@
         </div>
       </ng-template>
     </ng-template>
+
   </div>
 </section>

@@ -277,25 +277,25 @@
       "id": "5cVbhKy0drw"
     },
     {
-      "fullName": "hhhhh",
-      "phone": "12345678",
-      "parentPhone": "2346745678",
-      "address": "sel",
+      "fullName": "fatima elaroussi",
+      "phone": "123456787890",
+      "parentPhone": "123456789000",
+      "address": "sale",
       "schoolLevel": "2ème année bac",
       "subjects": [
         "Mathématiques",
         "Physique"
       ],
       "groups": [
-        "mathA"
+        "MATHA"
       ],
       "registrationDate": "2026-05-29",
-      "monthlyPayment": 1344,
-      "paymentStatus": "en retard",
+      "monthlyPayment": 600,
+      "paymentStatus": "payé",
       "notes": "",
       "photo": "",
       "attendanceRate": 0,
-      "id": "YTwzBkK-rVM"
+      "id": "94Wt3wuX3rg"
     }
   ],
   "teachers": [
@@ -433,6 +433,26 @@
       "paymentStatus": "en attente",
       "notes": "",
       "id": "SAlhvAML2rQ"
+    },
+    {
+      "fullName": "ahmed",
+      "email": "ahmed@gmail.com",
+      "phone": "123456789",
+      "subjects": [
+        "Mathématiques"
+      ],
+      "schoolLevels": [
+        "2ème année bac",
+        "Tronc Commun"
+      ],
+      "salary": 5700,
+      "groups": [
+        "mathA"
+      ],
+      "hireDate": "2026-05-29",
+      "paymentStatus": "payé",
+      "notes": "",
+      "id": "U05ZhEdeUbU"
     }
   ],
   "levels": [
@@ -475,7 +495,8 @@
     {
       "name": "SVT",
       "schoolLevels": [
-        "2"
+        "2",
+        "VmMiPp2owjw"
       ],
       "color": "#4caf50",
       "description": "",
@@ -483,24 +504,6 @@
     }
   ],
   "groups": [
-    {
-      "name": "testzz",
-      "subjectId": 2,
-      "schoolLevelId": 2,
-      "teacherId": 2,
-      "room": "salle 1",
-      "maxStudents": 20,
-      "studentIds": [],
-      "schedules": [
-        {
-          "day": "Mercredi",
-          "startTime": "18:00",
-          "endTime": "20:00"
-        }
-      ],
-      "createdAt": "2026-05-26",
-      "id": "fsZs4dF1Dn8"
-    },
     {
       "name": "test 2",
       "subjectId": 1,
@@ -541,6 +544,24 @@
       ],
       "createdAt": "2026-05-29",
       "id": "QOe7YzydoUc"
+    },
+    {
+      "name": "svtA",
+      "subjectId": null,
+      "schoolLevelId": 2,
+      "teacherId": 2,
+      "room": "sallle 3",
+      "maxStudents": 25,
+      "studentIds": [],
+      "schedules": [
+        {
+          "day": "Lundi",
+          "startTime": "18:00",
+          "endTime": "20:00"
+        }
+      ],
+      "createdAt": "2026-05-29",
+      "id": "RJuF922bsXc"
     }
   ],
   "payments": [
@@ -567,6 +588,18 @@
       "paidDate": null,
       "createdAt": "2026-05-29T13:55:45.786Z",
       "id": "UTjaNDIY4l0"
+    },
+    {
+      "studentId": "MZ0liBxgdrc",
+      "type": "inscription",
+      "amount": 450,
+      "month": "2026-02",
+      "dueDate": "2026-02-01",
+      "status": "payé",
+      "method": "espèces",
+      "paidDate": "2026-06-04",
+      "createdAt": "2026-05-29T18:35:25.683Z",
+      "id": "DJXRzKOOWOA"
     }
   ],
   "expenses": [
@@ -611,6 +644,20 @@
       "createdAt": "2026-05-29T17:41:29.667Z",
       "updatedAt": "2026-05-29T17:41:29.667Z",
       "id": "e_3ZucMP6DQ"
+    },
+    {
+      "title": "loyer",
+      "category": "maintenance",
+      "amount": 567,
+      "date": "2026-06-03",
+      "month": "2026-06",
+      "paidDate": null,
+      "status": "en attente",
+      "recurrence": "unique",
+      "method": "chèque",
+      "createdAt": "2026-05-29T18:36:24.641Z",
+      "updatedAt": "2026-05-29T18:36:24.641Z",
+      "id": "yJ315zYKQFE"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

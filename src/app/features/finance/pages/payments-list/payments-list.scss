@@ -10,9 +10,7 @@
 // ─── Layout ───────────────────────────────────────────────────────────────────
 .payments-page {
   display: grid;
-  gap: 24px;
-  max-width: 1400px;
-  margin: 0 auto;
+  gap: 20px;
 }
 
 // ─── Page header ─────────────────────────────────────────────────────────────
@@ -36,9 +34,10 @@
 
 .page-header h1 {
   margin: 0;
-  font-size: clamp(1.8rem, 2.4vw, 2.3rem);
+  font-size: clamp(1.4rem, 2vw, 1.9rem);
+  font-weight: 700;
   letter-spacing: -0.03em;
-  line-height: 1.1;
+  line-height: 1.15;
 }
 
 .page-description {
@@ -57,27 +56,27 @@
 .kpi-card {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 18px 20px;
-  border-radius: 18px;
+  gap: 12px;
+  padding: 16px 18px;
+  border-radius: var(--radius-lg);
   background: var(--surface, #fff);
   border: 1px solid var(--border, rgba(30, 60, 100, 0.09));
-  box-shadow: 0 2px 12px rgba(30, 60, 100, 0.07);
-  transition: box-shadow 0.2s;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.18s ease, transform 0.18s ease;
 
-  &:hover { box-shadow: 0 6px 24px rgba(30, 60, 100, 0.13); }
+  &:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
   &--wide { grid-column: span 1; }
 }
 
 .kpi-icon {
   flex-shrink: 0;
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
   display: grid;
   place-items: center;
 
-  mat-icon { font-size: 22px; width: 22px; height: 22px; }
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
 
   &--total   { background: #eef2ff; color: #4f46e5; }
   &--paid    { background: #ecfdf5; color: #059669; }
@@ -94,20 +93,22 @@
 }
 
 .kpi-label {
-  font-size: 0.72rem;
+  font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.05em;
   color: var(--muted, #7a8fa3);
   white-space: nowrap;
+  margin-top: 2px;
 }
 
 .kpi-value {
-  font-size: 1.6rem;
+  font-size: 20px;
   font-weight: 700;
-  line-height: 1;
+  line-height: 1.2;
+  letter-spacing: -0.04em;
   color: var(--text, #0d1f35);
 
-  &--lg { font-size: 1.35rem; }
+  &--lg { font-size: 16px; letter-spacing: -0.02em; }
 }
 
 .kpi-sub {
@@ -117,49 +118,52 @@
 
 // ─── Table card ───────────────────────────────────────────────────────────────
 .table-card {
-  border-radius: 20px !important;
-  padding: 20px;
+  border-radius: var(--radius-lg) !important;
+  padding: 0 !important;
   background: var(--surface, #fff) !important;
-  box-shadow: 0 6px 20px rgba(30, 60, 100, 0.09) !important;
+  box-shadow: var(--shadow-sm) !important;
   border: 1px solid var(--border, rgba(30, 60, 100, 0.09)) !important;
+  overflow: hidden !important;
 }
 
 // ─── Filter bar ───────────────────────────────────────────────────────────────
 .filter-bar {
-  display: grid;
-  grid-template-columns: minmax(220px, 1.6fr) repeat(2, minmax(160px, 1fr)) auto;
+  display: flex;
+  align-items: center;
   gap: 12px;
-  align-items: end;
-  margin-bottom: 20px;
+  flex-wrap: wrap;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border, rgba(30, 60, 100, 0.09));
+  // background: var(--surface-2, #f6f9fc);
 }
 
-.filter-field { width: 100%; }
-.search-field { min-width: 220px; }
+.filter-field  { flex: 1 1 160px; min-width: 140px; }
+.search-field  { flex: 2 1 220px; }
 
 .filter-meta {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  gap: 4px;
-  font-size: 0.88rem;
-  color: var(--text-2, #3d5470);
+  gap: 2px;
+  white-space: nowrap;
+  margin-left: auto;
 }
 
-.filter-count { font-weight: 600; }
-.filter-page  { font-size: 0.8rem; color: var(--muted, #7a8fa3); }
+.filter-count { font-size: 13px; font-weight: 600; color: var(--text, #0d1f35); }
+.filter-page  { font-size: 11px; color: var(--muted, #7a8fa3); }
 
 // ─── States ───────────────────────────────────────────────────────────────────
 .state-panel {
-  min-height: 260px;
-  display: grid;
-  place-items: center;
-  gap: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  padding: 32px 20px;
-  color: var(--text-2, #3d5470);
+  gap: 12px;
+  padding: 48px 24px;
+  color: var(--muted, #7a8fa3);
 
-  h2 { margin: 0; color: var(--text, #0d1f35); }
-  p  { margin: 0; max-width: 360px; }
+  h2 { margin: 0; font-size: 16px; color: var(--text, #0d1f35); }
+  p  { margin: 0; font-size: 13px; max-width: 360px; }
 }
 
 .state-icon {
@@ -315,10 +319,10 @@ mat-paginator {
 
 // ─── Mobile payment card ──────────────────────────────────────────────────────
 .payment-card {
-  border-radius: 18px !important;
+  border-radius: var(--radius-lg) !important;
   padding: 16px;
   border: 1px solid var(--border, rgba(30, 60, 100, 0.1)) !important;
-  box-shadow: 0 2px 10px rgba(30, 60, 100, 0.07) !important;
+  box-shadow: var(--shadow-sm) !important;
 }
 
 .pcard-header {

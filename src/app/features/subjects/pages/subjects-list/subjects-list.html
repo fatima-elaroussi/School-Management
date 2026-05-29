@@ -1,4 +1,6 @@
 <section class="subjects-page-shell">
+
+  <!-- ── Header ──────────────────────────────────────────────────────────────── -->
   <header class="page-header-row">
     <div>
       <p class="page-eyebrow">Matières</p>
@@ -13,24 +15,35 @@
     </button>
   </header>
 
-  <mat-card class="overview-card">
-    <div class="overview-grid">
-      <div class="overview-item">
-        <span class="overview-label">Matières</span>
-        <strong>{{ totalSubjects() }}</strong>
-      </div>
-      <div class="overview-item">
-        <span class="overview-label">Niveaux scolaires</span>
-        <strong>{{ levels().length }}</strong>
-      </div>
-      <div class="overview-item">
-        <span class="overview-label">Résultats filtrés</span>
-        <strong>{{ filteredSubjects().length }}</strong>
+  <!-- ── Stats strip ─────────────────────────────────────────────────────────── -->
+  <div class="stats-strip">
+    <div class="stat-card">
+      <div class="stat-icon stat-icon--info"><mat-icon>menu_book</mat-icon></div>
+      <div class="stat-body">
+        <div class="stat-value">{{ totalSubjects() }}</div>
+        <div class="stat-label">Matières</div>
       </div>
     </div>
-  </mat-card>
+    <div class="stat-card">
+      <div class="stat-icon stat-icon--primary"><mat-icon>layers</mat-icon></div>
+      <div class="stat-body">
+        <div class="stat-value">{{ levels().length }}</div>
+        <div class="stat-label">Niveaux scolaires</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon stat-icon--accent"><mat-icon>filter_list</mat-icon></div>
+      <div class="stat-body">
+        <div class="stat-value">{{ filteredSubjects().length }}</div>
+        <div class="stat-label">Résultats filtrés</div>
+      </div>
+    </div>
+  </div>
 
-  <mat-card class="table-card">
+  <!-- ── Table card ──────────────────────────────────────────────────────────── -->
+  <div class="table-card">
+
+    <!-- Toolbar -->
     <div class="toolbar-row">
       <mat-form-field appearance="outline" class="search-field">
         <mat-label>Rechercher une matière</mat-label>
@@ -40,19 +53,20 @@
           <mat-icon>close</mat-icon>
         </button>
       </mat-form-field>
-      <div class="toolbar-info">
-        <span>{{ filteredSubjects().length }} résultat(s)</span>
-      </div>
+      <div class="toolbar-info">{{ filteredSubjects().length }} résultat(s)</div>
     </div>
 
+    <!-- Loading -->
     <ng-container *ngIf="loading()">
       <div class="loading-panel">
-        <mat-progress-spinner diameter="48" mode="indeterminate"></mat-progress-spinner>
+        <mat-progress-spinner diameter="40" mode="indeterminate"></mat-progress-spinner>
         <p>Chargement des matières…</p>
       </div>
     </ng-container>
 
     <ng-container *ngIf="!loading()">
+
+      <!-- Empty — no subjects at all -->
       <ng-container *ngIf="totalSubjects() === 0">
         <div class="empty-panel">
           <mat-icon>menu_book</mat-icon>
@@ -64,9 +78,21 @@
         </div>
       </ng-container>
 
-      <ng-container *ngIf="totalSubjects() > 0">
+      <!-- Empty search result -->
+      <ng-container *ngIf="totalSubjects() > 0 && filteredSubjects().length === 0">
+        <div class="empty-panel">
+          <mat-icon>search_off</mat-icon>
+          <h2>Aucun résultat</h2>
+          <p>Aucune matière ne correspond à votre recherche.</p>
+          <button mat-stroked-button type="button" (click)="clearSearch()">Réinitialiser</button>
+        </div>
+      </ng-container>
+
+      <!-- Table -->
+      <ng-container *ngIf="totalSubjects() > 0 && filteredSubjects().length > 0">
         <div class="table-wrapper">
           <table mat-table [dataSource]="dataSource" class="subjects-table">
+
             <ng-container matColumnDef="name">
               <th mat-header-cell *matHeaderCellDef>Nom de la matière</th>
               <td mat-cell *matCellDef="let subject">{{ subject.name }}</td>
@@ -121,6 +147,9 @@
           showFirstLastButtons
         ></mat-paginator>
       </ng-container>
+
     </ng-container>
-  </mat-card>
+
+  </div>
+
 </section>
