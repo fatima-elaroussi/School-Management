@@ -1,0 +1,112 @@
+<div class="group-dialog">
+  <header class="dialog-header">
+    <div>
+      <p class="eyebrow">Group setup</p>
+      <h2>{{ title }}</h2>
+      <p>Link a subject, level, teacher and weekly schedule.</p>
+    </div>
+    <button mat-icon-button type="button" aria-label="Close" (click)="cancel()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </header>
+
+  <form class="dialog-form" [formGroup]="form" (ngSubmit)="save()">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Group name</mat-label>
+      <input matInput formControlName="name" placeholder="Math Bac 2026" />
+    </mat-form-field>
+
+    <div class="form-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Subject</mat-label>
+        <mat-select formControlName="subjectId" [disabled]="lookupsLoading()">
+          @for (option of subjectOptions(); track option.value) {
+            <mat-option [value]="option.value">{{ option.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>School level</mat-label>
+        <mat-select formControlName="schoolLevelId" [disabled]="lookupsLoading()">
+          @for (option of levelOptions(); track option.value) {
+            <mat-option [value]="option.value">{{ option.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Teacher</mat-label>
+        <mat-select formControlName="teacherId">
+          @for (teacher of teachers(); track teacher.id) {
+            <mat-option [value]="teacher.id">{{ teacher.fullName }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Room</mat-label>
+        <input matInput formControlName="room" placeholder="Salle 4" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Max students</mat-label>
+        <input matInput type="number" formControlName="maxStudents" min="1" />
+      </mat-form-field>
+    </div>
+
+    <section class="schedules-section" formArrayName="schedules">
+      <div class="schedules-header">
+        <h3>Schedule</h3>
+        <button mat-stroked-button type="button" (click)="addSchedule()">
+          <mat-icon>add</mat-icon>
+          Add slot
+        </button>
+      </div>
+
+      @for (slot of scheduleControls; track $index; let i = $index) {
+        <div class="schedule-row" [formGroupName]="i">
+          <mat-form-field appearance="outline">
+            <mat-label>Day</mat-label>
+            <mat-select formControlName="day">
+              @for (day of days; track day) {
+                <mat-option [value]="day">{{ day }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Start</mat-label>
+            <input matInput type="time" formControlName="startTime" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>End</mat-label>
+            <input matInput type="time" formControlName="endTime" />
+          </mat-form-field>
+
+          <button
+            mat-icon-button
+            type="button"
+            aria-label="Remove schedule"
+            [disabled]="scheduleControls.length <= 1"
+            (click)="removeSchedule(i)"
+          >
+            <mat-icon>remove_circle_outline</mat-icon>
+          </button>
+        </div>
+      }
+    </section>
+
+    <footer class="dialog-actions">
+      <button mat-button type="button" (click)="cancel()">Cancel</button>
+      <button mat-flat-button color="primary" type="submit" [disabled]="saveLoading()">
+        @if (saveLoading()) {
+          <mat-progress-spinner diameter="20" mode="indeterminate"></mat-progress-spinner>
+        } @else {
+          {{ isEditMode ? 'Update group' : 'Create group' }}
+        }
+      </button>
+    </footer>
+  </form>
+</div>

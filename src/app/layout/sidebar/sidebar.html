@@ -4,7 +4,7 @@
     class="sidenav"
     [class.collapsed]="collapsed()"
     [mode]="isHandset() ? 'over' : 'side'"
-    [opened]="!isHandset() && !collapsed()"
+    [opened]="!isHandset()"
     [fixedInViewport]="isHandset()"
   >
     <div class="sidenav-header">
@@ -28,8 +28,9 @@
         *ngFor="let item of navItems"
         [routerLink]="item.route"
         routerLinkActive="active"
-        [routerLinkActiveOptions]="{ exact: true }"
-        (click)="isHandset() ? drawer.close() : null"
+        [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
+        [class.active]="isActive(item.route, item.exact ?? false)"
+        (click)="navigateTo(item.route, drawer)"
         class="nav-item"
       >
         <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>

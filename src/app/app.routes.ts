@@ -51,6 +51,15 @@ export const routes: Routes = [
             (c) => c.SubjectsList,
           ),
       },
+      {
+        path: 'groups',
+        loadComponent: () =>
+          import('./features/groups/pages/groups-list/groups-list').then((m) => m.GroupsList),
+      },
+      {
+        path: '**',
+        redirectTo: 'dashboard',
+      },
     ],
   },
 ];

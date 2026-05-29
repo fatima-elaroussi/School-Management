@@ -409,7 +409,26 @@
       "color": "#10b981"
     }
   ],
-  "groups": [],
+  "groups": [
+    {
+      "name": "test",
+      "subjectId": 1,
+      "schoolLevelId": 1,
+      "teacherId": null,
+      "room": "salle 1",
+      "maxStudents": 20,
+      "studentIds": [],
+      "schedules": [
+        {
+          "day": "Lundi",
+          "startTime": "18:00",
+          "endTime": "20:00"
+        }
+      ],
+      "createdAt": "2026-05-26",
+      "id": "fsZs4dF1Dn8"
+    }
+  ],
   "payments": [],
   "$schema": "./node_modules/json-server/schema.json"
 }

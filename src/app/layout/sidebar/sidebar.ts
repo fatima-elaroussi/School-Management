@@ -1,13 +1,20 @@
-import { Component, OnDestroy, signal } from '@angular/core';
+import { Component, OnDestroy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
+
+interface NavItem {
+  label: string;
+  icon: string;
+  route: string;
+  exact?: boolean;
+}
 
 @Component({
   selector: 'app-sidebar',
@@ -25,12 +32,14 @@ import { MatTooltipModule } from '@angular/material/tooltip';
   styleUrls: ['./sidebar.scss'],
 })
 export class SidebarComponent implements OnDestroy {
+  private readonly router = inject(Router);
+
   collapsed = signal(false);
   isHandset = signal(false);
   private bpSub?: Subscription;
 
-  navItems = [
-    { label: 'Dashboard', icon: 'dashboard', route: '/dashboard' },
+  readonly navItems: NavItem[] = [
+    { label: 'Dashboard', icon: 'dashboard', route: '/dashboard', exact: true },
     { label: 'Étudiants', icon: 'groups', route: '/students' },
     { label: 'Professeurs', icon: 'person', route: '/teachers' },
     { label: 'Groupes', icon: 'view_list', route: '/groups' },
@@ -50,6 +59,19 @@ export class SidebarComponent implements OnDestroy {
 
   toggleCollapsed() {
     this.collapsed.update((v) => !v);
+  }
+
+  isActive(route: string, exact = false): boolean {
+    const tree = this.router.parseUrl(this.router.url);
+    const path = '/' + (tree.root.children['primary']?.segments.map((s) => s.path).join('/') ?? '');
+    return exact ? path === route : path === route || path.startsWith(`${route}/`);
+  }
+
+  navigateTo(route: string, drawer: MatSidenav): void {
+    void this.router.navigateByUrl(route);
+    if (this.isHandset()) {
+      void drawer.close();
+    }
   }
 
   ngOnDestroy(): void {

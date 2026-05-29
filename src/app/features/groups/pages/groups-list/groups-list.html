@@ -1,0 +1,264 @@
+<section class="groups-page">
+  <header class="page-header">
+    <div class="page-title-group">
+      <p class="eyebrow">Groupes</p>
+      <h1>Groups management</h1>
+      <p class="page-description">
+        Organize classes by subject, level and teacher. Search, filter and manage schedules in one place.
+      </p>
+    </div>
+
+    <button mat-flat-button color="primary" type="button" (click)="openGroupDialog()">
+      <mat-icon>group_add</mat-icon>
+      Add group
+    </button>
+  </header>
+
+  <mat-card class="overview-card">
+    <div class="overview-grid">
+      <div class="overview-item">
+        <span class="overview-label">Total groups</span>
+        <strong>{{ totalGroups() }}</strong>
+      </div>
+      <div class="overview-item">
+        <span class="overview-label">Filtered</span>
+        <strong>{{ filteredCount() }}</strong>
+      </div>
+      <div class="overview-item">
+        <span class="overview-label">Teachers</span>
+        <strong>{{ teachers().length }}</strong>
+      </div>
+    </div>
+  </mat-card>
+
+  <mat-card class="table-card">
+    <div class="filter-bar">
+      <mat-form-field appearance="outline" class="filter-field search-field">
+        <mat-label>Search groups</mat-label>
+        <input matInput placeholder="Name, room, subject, teacher…" [(ngModel)]="search" />
+        @if (search) {
+          <button mat-icon-button matSuffix type="button" aria-label="Clear search" (click)="clearSearch()">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Subject</mat-label>
+        <mat-select [(ngModel)]="subjectFilter">
+          @for (option of subjectFilterOptions(); track option.label) {
+            <mat-option [value]="option.value">{{ option.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>School level</mat-label>
+        <mat-select [(ngModel)]="levelFilter">
+          @for (option of levelFilterOptions(); track option.label) {
+            <mat-option [value]="option.value">{{ option.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Teacher</mat-label>
+        <mat-select [(ngModel)]="teacherFilter">
+          @for (option of teacherFilterOptions(); track option.label) {
+            <mat-option [value]="option.value">{{ option.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <div class="filter-summary">
+        <span>{{ filteredCount() }} results</span>
+        <span>Page {{ pageIndex() + 1 }} of {{ pageCount() }}</span>
+        @if (
+          subjectFilter !== 'all' ||
+          levelFilter !== 'all' ||
+          teacherFilter !== 'all' ||
+          search
+        ) {
+          <button mat-button type="button" (click)="clearFilters()">Reset filters</button>
+        }
+      </div>
+    </div>
+
+    @if (loading()) {
+      <div class="state-panel loading-state">
+        <mat-progress-spinner diameter="56" mode="indeterminate"></mat-progress-spinner>
+        <p>Loading groups…</p>
+      </div>
+    } @else if (totalGroups() === 0) {
+      <div class="state-panel empty-state">
+        <mat-icon>groups</mat-icon>
+        <h2>No groups yet</h2>
+        <p>Create your first teaching group to assign students and schedules.</p>
+        <button mat-flat-button color="primary" type="button" (click)="openGroupDialog()">
+          Add first group
+        </button>
+      </div>
+    } @else if (filteredCount() === 0) {
+      <div class="state-panel empty-state">
+        <mat-icon>search_off</mat-icon>
+        <h2>No groups match your filters</h2>
+        <p>Try another search term or reset the filters.</p>
+        <button mat-stroked-button type="button" (click)="clearFilters()">Reset filters</button>
+      </div>
+    } @else {
+      <div class="desktop-table">
+        <div class="table-wrapper">
+          <table mat-table [dataSource]="dataSource" class="groups-table">
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef>Group name</th>
+              <td mat-cell *matCellDef="let group">
+                <div class="name-cell">
+                  <mat-icon class="name-icon">groups</mat-icon>
+                  <strong>{{ group.name }}</strong>
+                </div>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="subject">
+              <th mat-header-cell *matHeaderCellDef>Subject</th>
+              <td mat-cell *matCellDef="let group">
+                <mat-chip class="chip-subject">{{ getSubjectName(group.subjectId) }}</mat-chip>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="schoolLevel">
+              <th mat-header-cell *matHeaderCellDef>School level</th>
+              <td mat-cell *matCellDef="let group">
+                <mat-chip class="chip-level">{{ getLevelName(group.schoolLevelId) }}</mat-chip>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="teacher">
+              <th mat-header-cell *matHeaderCellDef>Teacher</th>
+              <td mat-cell *matCellDef="let group">{{ getTeacherName(group.teacherId) }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="room">
+              <th mat-header-cell *matHeaderCellDef>Room</th>
+              <td mat-cell *matCellDef="let group">{{ group.room }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="studentsCount">
+              <th mat-header-cell *matHeaderCellDef>Students</th>
+              <td mat-cell *matCellDef="let group">
+                <span class="students-pill">{{ getStudentsLabel(group) }}</span>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="schedule">
+              <th mat-header-cell *matHeaderCellDef>Schedule</th>
+              <td mat-cell *matCellDef="let group">
+                <div class="schedule-chips">
+                  @for (slot of formatSchedules(group.schedules); track slot) {
+                    <mat-chip class="chip-schedule">{{ slot }}</mat-chip>
+                  }
+                </div>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Actions</th>
+              <td mat-cell *matCellDef="let group">
+                <button
+                  mat-icon-button
+                  color="primary"
+                  type="button"
+                  aria-label="Edit group"
+                  (click)="openGroupDialog(group)"
+                >
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
+                  color="warn"
+                  type="button"
+                  aria-label="Delete group"
+                  (click)="deleteGroup(group)"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayColumns"></tr>
+          </table>
+        </div>
+
+        <mat-paginator
+          [length]="filteredCount()"
+          [pageSize]="pageSize()"
+          [pageIndex]="pageIndex()"
+          [pageSizeOptions]="pageSizeOptions"
+          showFirstLastButtons
+          (page)="onPage($event)"
+        ></mat-paginator>
+      </div>
+
+      <div class="mobile-cards">
+        @for (group of pagedGroups(); track trackById($index, group)) {
+          <mat-card class="group-card">
+            <div class="card-header">
+              <div class="card-title">
+                <mat-icon>groups</mat-icon>
+                <div>
+                  <strong>{{ group.name }}</strong>
+                  <span>{{ group.room }}</span>
+                </div>
+              </div>
+              <span class="students-pill">{{ getStudentsLabel(group) }}</span>
+            </div>
+
+            <div class="card-body">
+              <div class="card-row">
+                <span>Subject</span>
+                <mat-chip class="chip-subject">{{ getSubjectName(group.subjectId) }}</mat-chip>
+              </div>
+              <div class="card-row">
+                <span>Level</span>
+                <mat-chip class="chip-level">{{ getLevelName(group.schoolLevelId) }}</mat-chip>
+              </div>
+              <div class="card-row">
+                <span>Teacher</span>
+                <strong>{{ getTeacherName(group.teacherId) }}</strong>
+              </div>
+              <div class="card-row schedule-row">
+                <span>Schedule</span>
+                <div class="schedule-chips">
+                  @for (slot of formatSchedules(group.schedules); track slot) {
+                    <mat-chip class="chip-schedule">{{ slot }}</mat-chip>
+                  }
+                </div>
+              </div>
+            </div>
+
+            <div class="card-actions">
+              <button mat-button type="button" (click)="openGroupDialog(group)">
+                <mat-icon>edit</mat-icon>
+                Edit
+              </button>
+              <button mat-button color="warn" type="button" (click)="deleteGroup(group)">
+                <mat-icon>delete</mat-icon>
+                Delete
+              </button>
+            </div>
+          </mat-card>
+        }
+
+        <mat-paginator
+          [length]="filteredCount()"
+          [pageSize]="pageSize()"
+          [pageIndex]="pageIndex()"
+          [pageSizeOptions]="pageSizeOptions"
+          showFirstLastButtons
+          (page)="onPage($event)"
+        ></mat-paginator>
+      </div>
+    }
+  </mat-card>
+</section>
