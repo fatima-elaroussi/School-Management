@@ -1,73 +1,116 @@
 <div class="group-dialog">
+
+  <!-- ── Header ─────────────────────────────────────────────────────────────── -->
   <header class="dialog-header">
-    <div>
-      <p class="eyebrow">Group setup</p>
-      <h2>{{ title }}</h2>
-      <p>Link a subject, level, teacher and weekly schedule.</p>
+    <div class="header-content">
+      <div class="header-icon">
+        <mat-icon>groups</mat-icon>
+      </div>
+      <div>
+        <p class="eyebrow">Organisation · Groupes</p>
+        <h2 class="dialog-title">{{ title }}</h2>
+        <p class="dialog-subtitle">
+          {{ isEditMode
+            ? 'Modifiez les paramètres de ce groupe.'
+            : 'Créez un groupe en liant une matière, un niveau et un professeur.' }}
+        </p>
+      </div>
     </div>
-    <button mat-icon-button type="button" aria-label="Close" (click)="cancel()">
+    <button mat-icon-button type="button" class="close-btn" (click)="cancel()">
       <mat-icon>close</mat-icon>
     </button>
   </header>
 
   <form class="dialog-form" [formGroup]="form" (ngSubmit)="save()">
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Group name</mat-label>
-      <input matInput formControlName="name" placeholder="Math Bac 2026" />
-    </mat-form-field>
 
-    <div class="form-grid">
-      <mat-form-field appearance="outline">
-        <mat-label>Subject</mat-label>
-        <mat-select formControlName="subjectId" [disabled]="lookupsLoading()" [compareWith]="compareById">
-          @for (option of subjectOptions(); track option.value) {
-            <mat-option [value]="option.value">{{ option.label }}</mat-option>
-          }
-        </mat-select>
+    <!-- ── Section 1 : Informations générales ─────────────────────────────── -->
+    <div class="form-section">
+      <p class="section-label">
+        <mat-icon>info</mat-icon>
+        Informations générales
+      </p>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nom du groupe</mat-label>
+        <mat-icon matPrefix>group_work</mat-icon>
+        <input matInput formControlName="name" placeholder="Math Bac 2026" />
       </mat-form-field>
 
-      <mat-form-field appearance="outline">
-        <mat-label>School level</mat-label>
-        <mat-select formControlName="schoolLevelId" [disabled]="lookupsLoading()" [compareWith]="compareById">
-          @for (option of levelOptions(); track option.value) {
-            <mat-option [value]="option.value">{{ option.label }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
+      <div class="form-row-2">
+        <mat-form-field appearance="outline">
+          <mat-label>Salle</mat-label>
+          <mat-icon matPrefix>meeting_room</mat-icon>
+          <input matInput formControlName="room" placeholder="Salle 4" />
+        </mat-form-field>
 
-      <mat-form-field appearance="outline">
-        <mat-label>Teacher</mat-label>
+        <mat-form-field appearance="outline">
+          <mat-label>Capacité max.</mat-label>
+          <mat-icon matPrefix>people</mat-icon>
+          <input matInput type="number" formControlName="maxStudents" min="1" />
+          <span matSuffix>étudiants</span>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- ── Section 2 : Affectation ───────────────────────────────────────── -->
+    <div class="form-section">
+      <p class="section-label">
+        <mat-icon>link</mat-icon>
+        Affectation
+      </p>
+
+      <div class="form-row-2">
+        <mat-form-field appearance="outline">
+          <mat-label>Matière</mat-label>
+          <mat-icon matPrefix>menu_book</mat-icon>
+          <mat-select formControlName="subjectId" [disabled]="lookupsLoading()" [compareWith]="compareById">
+            @for (opt of subjectOptions(); track opt.value) {
+              <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+            }
+          </mat-select>
+          <mat-hint *ngIf="lookupsLoading()">Chargement…</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Niveau scolaire</mat-label>
+          <mat-icon matPrefix>layers</mat-icon>
+          <mat-select formControlName="schoolLevelId" [disabled]="lookupsLoading()" [compareWith]="compareById">
+            @for (opt of levelOptions(); track opt.value) {
+              <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+            }
+          </mat-select>
+          <mat-hint *ngIf="lookupsLoading()">Chargement…</mat-hint>
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Professeur responsable</mat-label>
+        <mat-icon matPrefix>person</mat-icon>
         <mat-select formControlName="teacherId" [compareWith]="compareById">
-          @for (teacher of teachers(); track teacher.id) {
-            <mat-option [value]="teacher.id">{{ teacher.fullName }}</mat-option>
+          @for (t of teachers(); track t.id) {
+            <mat-option [value]="t.id">{{ t.fullName }}</mat-option>
           }
         </mat-select>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>Room</mat-label>
-        <input matInput formControlName="room" placeholder="Salle 4" />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>Max students</mat-label>
-        <input matInput type="number" formControlName="maxStudents" min="1" />
       </mat-form-field>
     </div>
 
-    <section class="schedules-section" formArrayName="schedules">
-      <div class="schedules-header">
-        <h3>Schedule</h3>
-        <button mat-stroked-button type="button" (click)="addSchedule()">
+    <!-- ── Section 3 : Emploi du temps ───────────────────────────────────── -->
+    <div class="form-section" formArrayName="schedules">
+      <div class="schedules-heading">
+        <p class="section-label" style="margin:0">
+          <mat-icon>schedule</mat-icon>
+          Emploi du temps
+        </p>
+        <button mat-stroked-button type="button" class="add-slot-btn" (click)="addSchedule()">
           <mat-icon>add</mat-icon>
-          Add slot
+          Ajouter un créneau
         </button>
       </div>
 
       @for (slot of scheduleControls; track $index; let i = $index) {
         <div class="schedule-row" [formGroupName]="i">
           <mat-form-field appearance="outline">
-            <mat-label>Day</mat-label>
+            <mat-label>Jour</mat-label>
             <mat-select formControlName="day">
               @for (day of days; track day) {
                 <mat-option [value]="day">{{ day }}</mat-option>
@@ -76,19 +119,19 @@
           </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>Start</mat-label>
+            <mat-label>Début</mat-label>
             <input matInput type="time" formControlName="startTime" />
           </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>End</mat-label>
+            <mat-label>Fin</mat-label>
             <input matInput type="time" formControlName="endTime" />
           </mat-form-field>
 
           <button
             mat-icon-button
             type="button"
-            aria-label="Remove schedule"
+            class="remove-slot-btn"
             [disabled]="scheduleControls.length <= 1"
             (click)="removeSchedule(i)"
           >
@@ -96,17 +139,17 @@
           </button>
         </div>
       }
-    </section>
+    </div>
 
-    <footer class="dialog-actions">
-      <button mat-button type="button" (click)="cancel()">Cancel</button>
-      <button mat-flat-button color="primary" type="submit" [disabled]="saveLoading()">
-        @if (saveLoading()) {
-          <mat-progress-spinner diameter="20" mode="indeterminate"></mat-progress-spinner>
-        } @else {
-          {{ isEditMode ? 'Update group' : 'Create group' }}
-        }
+    <!-- ── Footer ────────────────────────────────────────────────────────── -->
+    <footer class="dialog-footer">
+      <button mat-stroked-button type="button" (click)="cancel()">Annuler</button>
+      <button mat-flat-button color="primary" type="submit" class="save-btn" [disabled]="saveLoading()">
+        <mat-progress-spinner *ngIf="saveLoading()" diameter="18" mode="indeterminate" />
+        <mat-icon *ngIf="!saveLoading()">{{ isEditMode ? 'save' : 'add_circle' }}</mat-icon>
+        <span>{{ isEditMode ? 'Enregistrer les modifications' : 'Créer le groupe' }}</span>
       </button>
     </footer>
+
   </form>
 </div>

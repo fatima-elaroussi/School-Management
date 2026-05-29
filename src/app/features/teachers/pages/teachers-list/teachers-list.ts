@@ -13,6 +13,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { TeacherFormDialog } from '../../components/teacher-form-dialog/teacher-form-dialog';
 import { LookupsService } from '../../../../core/services/lookups.service';
@@ -41,6 +42,7 @@ type PaymentStatusFilter = 'all' | 'payé' | 'en attente';
     MatSnackBarModule,
     MatProgressSpinnerModule,
     MatTableModule,
+    MatTooltipModule,
   ],
   templateUrl: './teachers-list.html',
   styleUrls: ['./teachers-list.scss'],
@@ -64,10 +66,8 @@ export class TeachersList {
 
   readonly displayColumns = [
     'avatar',
-    'email',
     'phone',
     'subjects',
-    'schoolLevels',
     'salary',
     'groups',
     'paymentStatus',
@@ -77,17 +77,17 @@ export class TeachersList {
   readonly pageSizeOptions = [5, 10, 20];
 
   readonly statusOptions = [
-    { value: 'all' as PaymentStatusFilter, label: 'All status' },
+    { value: 'all' as PaymentStatusFilter, label: 'Tous les statuts' },
     { value: 'payé' as PaymentStatusFilter, label: 'Payé' },
     { value: 'en attente' as PaymentStatusFilter, label: 'En attente' },
   ];
 
   readonly sortOptions = [
-    { value: 'fullName' as SortField, label: 'Name' },
+    { value: 'fullName' as SortField, label: 'Nom' },
     { value: 'email' as SortField, label: 'Email' },
-    { value: 'phone' as SortField, label: 'Phone' },
-    { value: 'salary' as SortField, label: 'Salary' },
-    { value: 'paymentStatus' as SortField, label: 'Payment status' },
+    { value: 'phone' as SortField, label: 'Téléphone' },
+    { value: 'salary' as SortField, label: 'Salaire' },
+    { value: 'paymentStatus' as SortField, label: 'Statut de paiement' },
   ];
 
   get search() {
@@ -235,14 +235,23 @@ export class TeachersList {
     this.dataSource.data = this.pagedTeachers();
   }
 
+  paymentChipClass(status: string): string {
+    const map: Record<string, string> = {
+      'payé':       'chip-paid',
+      'en attente': 'chip-pending',
+      'en retard':  'chip-late',
+    };
+    return map[status] ?? 'chip-pending';
+  }
+
   deleteTeacher(teacher: Teacher): void {
     const confirmDialogRef = this.dialog.open(ConfirmDialog, {
       width: '420px',
       data: {
-        title: 'Delete teacher',
-        message: `Are you sure you want to delete ${teacher.fullName}? This action cannot be undone.`,
-        confirmText: 'Delete',
-        cancelText: 'Cancel',
+        title: 'Supprimer le professeur',
+        message: `Êtes-vous sûr de vouloir supprimer ${teacher.fullName} ? Cette action est irréversible.`,
+        confirmText: 'Supprimer',
+        cancelText: 'Annuler',
       },
     });
 
@@ -257,10 +266,10 @@ export class TeachersList {
           this.teachers.update((list) => list.filter((item) => item.id !== teacher.id));
           this.updateTableData();
           this.pageIndex.set(0);
-          this.snackBar.open('Teacher deleted successfully.', 'Close', { duration: 3000 });
+          this.snackBar.open('Professeur supprimé.', 'Fermer', { duration: 3000 });
         },
         error: () => {
-          this.snackBar.open('Unable to delete teacher. Please try again.', 'Close', {
+          this.snackBar.open('Impossible de supprimer le professeur.', 'Fermer', {
             duration: 3000,
           });
           this.loading.set(false);

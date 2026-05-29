@@ -12,6 +12,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { LevelFormDialog } from '../../components/level-form-dialog/level-form-dialog';
 import { LevelsService } from '../../services/levels';
@@ -36,6 +37,7 @@ type LevelCategory = 'all' | 'primaire' | 'collège' | 'lycée';
     MatSnackBarModule,
     MatProgressSpinnerModule,
     MatTableModule,
+    MatTooltipModule,
   ],
   templateUrl: './levels-list.html',
   styleUrls: ['./levels-list.scss'],
@@ -56,7 +58,7 @@ export class LevelsList {
   readonly displayColumns = ['name', 'category', 'description', 'actions'];
   readonly pageSizeOptions = [5, 10, 20];
   readonly categoryOptions = [
-    { value: 'all' as LevelCategory, label: 'All categories' },
+    { value: 'all' as LevelCategory, label: 'Toutes les catégories' },
     { value: 'primaire' as LevelCategory, label: 'Primaire' },
     { value: 'collège' as LevelCategory, label: 'Collège' },
     { value: 'lycée' as LevelCategory, label: 'Lycée' },
@@ -163,10 +165,10 @@ export class LevelsList {
     const confirmDialogRef = this.dialog.open(ConfirmDialog, {
       width: '420px',
       data: {
-        title: 'Delete level',
-        message: `Are you sure you want to remove “${level.name}”? This cannot be undone.`,
-        confirmText: 'Delete',
-        cancelText: 'Cancel',
+        title: 'Supprimer le niveau',
+        message: `Êtes-vous sûr de vouloir supprimer “${level.name}” ? Cette action est irréversible.`,
+        confirmText: 'Supprimer',
+        cancelText: 'Annuler',
       },
     });
 
@@ -178,11 +180,11 @@ export class LevelsList {
       this.loading.set(true);
       this.levelsService.deleteLevel(level.id).subscribe({
         next: () => {
-          this.snackBar.open('Level deleted successfully.', 'Close', { duration: 3000 });
+          this.snackBar.open('Niveau supprimé.', 'Fermer', { duration: 3000 });
           this.loadLevels();
         },
         error: () => {
-          this.snackBar.open('Unable to delete level. Please try again.', 'Close', {
+          this.snackBar.open('Impossible de supprimer le niveau.', 'Fermer', {
             duration: 3000,
           });
           this.loading.set(false);

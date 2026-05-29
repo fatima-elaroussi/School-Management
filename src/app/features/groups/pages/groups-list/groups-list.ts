@@ -12,6 +12,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { LookupsService } from '../../../../core/services/lookups.service';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { Teacher } from '../../../teachers/models/teacher.model';
@@ -39,6 +40,7 @@ type FilterValue = 'all' | number;
     MatSelectModule,
     MatSnackBarModule,
     MatTableModule,
+    MatTooltipModule,
   ],
   templateUrl: './groups-list.html',
   styleUrls: ['./groups-list.scss'],
@@ -119,17 +121,17 @@ export class GroupsList {
   );
 
   readonly subjectFilterOptions = computed(() => [
-    { value: 'all' as const, label: 'All subjects' },
+    { value: 'all' as const, label: 'Toutes les matières' },
     ...this.lookups.subjectOptions(),
   ]);
 
   readonly levelFilterOptions = computed(() => [
-    { value: 'all' as const, label: 'All levels' },
+    { value: 'all' as const, label: 'Tous les niveaux' },
     ...this.lookups.levelOptions(),
   ]);
 
   readonly teacherFilterOptions = computed(() => [
-    { value: 'all' as const, label: 'All teachers' },
+    { value: 'all' as const, label: 'Tous les professeurs' },
     ...this.teachers().map((teacher) => ({ value: teacher.id, label: teacher.fullName })),
   ]);
 
@@ -284,10 +286,10 @@ export class GroupsList {
     const dialogRef = this.dialog.open(ConfirmDialog, {
       width: '420px',
       data: {
-        title: 'Delete group',
-        message: `Delete “${group.name}”? This cannot be undone.`,
-        confirmText: 'Delete',
-        cancelText: 'Cancel',
+        title: 'Supprimer le groupe',
+        message: `Supprimer “${group.name}” ? Cette action est irréversible.`,
+        confirmText: 'Supprimer',
+        cancelText: 'Annuler',
       },
     });
 
@@ -299,11 +301,11 @@ export class GroupsList {
       this.loading.set(true);
       this.groupsService.deleteGroup(group.id).subscribe({
         next: () => {
-          this.snackBar.open('Group deleted successfully.', 'Close', { duration: 3000 });
+          this.snackBar.open('Groupe supprimé.', 'Fermer', { duration: 3000 });
           this.loadGroups();
         },
         error: () => {
-          this.snackBar.open('Unable to delete group.', 'Close', { duration: 3000 });
+          this.snackBar.open('Impossible de supprimer le groupe.', 'Fermer', { duration: 3000 });
           this.loading.set(false);
         },
       });

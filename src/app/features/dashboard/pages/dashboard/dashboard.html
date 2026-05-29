@@ -1,86 +1,151 @@
 <div class="dashboard-root">
+
+  <!-- ── Header ─────────────────────────────────────────────────────────────── -->
+  <header class="dash-header">
+    <div>
+      <p class="eyebrow">Vue d'ensemble</p>
+      <h1 class="dash-title">Tableau de bord</h1>
+    </div>
+    <div class="header-actions">
+      <button mat-stroked-button type="button" routerLink="/finance/dashboard">
+        <mat-icon>bar_chart</mat-icon>
+        Finance
+      </button>
+      <button mat-flat-button color="primary" type="button" routerLink="/students">
+        <mat-icon>groups</mat-icon>
+        Étudiants
+      </button>
+    </div>
+  </header>
+
+  <!-- ── Error ──────────────────────────────────────────────────────────────── -->
+  <div class="error-banner" *ngIf="loadError()">
+    <mat-icon>cloud_off</mat-icon>
+    <span>Impossible de charger les données. Vérifiez que le serveur est démarré.</span>
+    <button mat-stroked-button type="button" (click)="loadAll()">Réessayer</button>
+  </div>
+
+  <!-- ── KPI Stats ──────────────────────────────────────────────────────────── -->
   <section class="stats-grid">
     <ng-container *ngIf="!loading(); else statsLoading">
-      <mat-card class="stat-card" *ngFor="let s of stats()">
+      <a
+        *ngFor="let s of stats()"
+        [routerLink]="s.route"
+        class="stat-card stat-card--{{ s.color }}"
+      >
         <div class="stat-icon">
           <mat-icon>{{ s.icon }}</mat-icon>
         </div>
         <div class="stat-body">
-          <div class="stat-value">{{ s.prefix || '' }}{{ s.value | number }}</div>
+          <div class="stat-value">{{ s.value }}</div>
           <div class="stat-title">{{ s.title }}</div>
         </div>
-      </mat-card>
+        <mat-icon class="stat-arrow">arrow_forward_ios</mat-icon>
+      </a>
     </ng-container>
 
     <ng-template #statsLoading>
-      <mat-card class="stat-card skeleton" *ngFor="let i of [1, 2, 3, 4, 5]">
-        <div class="stat-icon"></div>
+      <div class="stat-card skeleton" *ngFor="let i of skeletonItems">
+        <div class="stat-icon skel-icon"></div>
         <div class="stat-body">
-          <div class="stat-value placeholder"></div>
-          <div class="stat-title placeholder short"></div>
+          <div class="skel-line skel-val"></div>
+          <div class="skel-line skel-lbl"></div>
         </div>
-      </mat-card>
+      </div>
     </ng-template>
   </section>
 
-  <section class="main-grid">
-    <mat-card class="chart-card">
-      <div class="card-header">
-        <h3>Analytics</h3>
-        <button mat-icon-button aria-label="Refresh">
-          <mat-icon>refresh</mat-icon>
-        </button>
+  <!-- ── Quick metrics bar ─────────────────────────────────────────────────── -->
+  <div class="metrics-row" *ngIf="!loading()">
+    <div class="metric-pill">
+      <mat-icon>schedule</mat-icon>
+      <span><strong>{{ pendingCount() }}</strong> paiements en attente</span>
+    </div>
+    <div class="metric-pill">
+      <mat-icon>check_circle</mat-icon>
+      <span>Taux d'encaissement</span>
+      <div class="rate-bar">
+        <div class="rate-fill" [style.width.%]="collectionRate()"></div>
       </div>
-      <div class="chart-placeholder">
-        <div class="chart-label">(Chart placeholder)</div>
-      </div>
-    </mat-card>
+      <strong>{{ collectionRate() }}%</strong>
+    </div>
+    <div class="metric-pill">
+      <mat-icon>warning_amber</mat-icon>
+      <span><strong>{{ lateCount() }}</strong> en retard</span>
+    </div>
+  </div>
 
-    <mat-card class="payments-card">
-      <div class="card-header">
-        <h3>Recent Payments</h3>
+  <!-- ── Recent Payments ────────────────────────────────────────────────────── -->
+  <mat-card class="payments-card">
+    <div class="card-header">
+      <div>
+        <h2>Paiements récents</h2>
+        <p class="card-subtitle">Les {{ recentPayments().length }} derniers paiements enregistrés</p>
       </div>
+      <button mat-button color="primary" type="button" routerLink="/finance/payments">
+        Voir tous <mat-icon>arrow_forward</mat-icon>
+      </button>
+    </div>
 
-      <div *ngIf="loading(); else paymentsTable" class="table-loading">
-        <mat-progress-spinner diameter="36" mode="indeterminate"></mat-progress-spinner>
+    <ng-container *ngIf="loading(); else paymentsContent">
+      <div class="skel-table">
+        <div class="skel-row" *ngFor="let i of skeletonItems">
+          <div class="skel-avatar"></div>
+          <div class="skel-line skel-w60"></div>
+          <div class="skel-line skel-w30"></div>
+          <div class="skel-line skel-w30"></div>
+          <div class="skel-badge"></div>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-template #paymentsContent>
+      <div *ngIf="recentPayments().length === 0; else paymentsTable" class="empty-state-panel">
+        <mat-icon>receipt_long</mat-icon>
+        <p>Aucun paiement enregistré</p>
       </div>
 
       <ng-template #paymentsTable>
-        <table class="payments-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Student</th>
-              <th>Amount</th>
-              <th>Status</th>
-              <th>Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let p of recentPayments()">
-              <td>{{ p.id }}</td>
-              <td>{{ p.student }}</td>
-              <td>{{ p.amount | currency: 'EUR' }}</td>
-              <td>
-                <span class="status {{ p.status | lowercase }}">{{ p.status }}</span>
-              </td>
-              <td>{{ p.date }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </ng-template>
-    </mat-card>
+        <div class="table-wrapper">
+          <table mat-table [dataSource]="recentPayments()" class="payments-table">
 
-    <mat-card class="classes-card">
-      <div class="card-header">
-        <h3>Aujourd'hui</h3>
-      </div>
-      <mat-list>
-        <mat-list-item *ngFor="let c of todaysClasses()">
-          <div matLine class="class-time">{{ c.time }}</div>
-          <div matLine class="class-info">{{ c.class }} — {{ c.room }} — {{ c.teacher }}</div>
-        </mat-list-item>
-      </mat-list>
-    </mat-card>
-  </section>
+            <ng-container matColumnDef="student">
+              <th mat-header-cell *matHeaderCellDef>Étudiant</th>
+              <td mat-cell *matCellDef="let p">
+                <div class="student-cell">
+                  <div class="avatar-circle">{{ p.studentName.charAt(0).toUpperCase() }}</div>
+                  <span>{{ p.studentName }}</span>
+                </div>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="month">
+              <th mat-header-cell *matHeaderCellDef>Mois</th>
+              <td mat-cell *matCellDef="let p">
+                <span class="month-pill">{{ p.monthLabel }}</span>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="amount">
+              <th mat-header-cell *matHeaderCellDef>Montant</th>
+              <td mat-cell *matCellDef="let p">
+                <strong class="amount-val">{{ formatAmountFull(p.amount) }}</strong>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Statut</th>
+              <td mat-cell *matCellDef="let p">
+                <span class="status-badge {{ statusCss(p.status) }}">{{ statusLabel(p.status) }}</span>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="recentColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: recentColumns" class="recent-row"></tr>
+          </table>
+        </div>
+      </ng-template>
+    </ng-template>
+  </mat-card>
+
 </div>

@@ -59,8 +59,8 @@ export class TeacherFormDialog {
   );
 
   readonly paymentStatusOptions = [
-    { value: 'payé', label: 'Payé' },
-    { value: 'en attente', label: 'En attente' },
+    { value: 'payé',       label: 'Payé',       css: 'status-paid'    },
+    { value: 'en attente', label: 'En attente', css: 'status-pending' },
   ];
 
   readonly form = this.fb.nonNullable.group({
@@ -87,33 +87,33 @@ export class TeacherFormDialog {
   }
 
   get title(): string {
-    return this.isEditMode ? 'Edit teacher profile' : 'Create teacher profile';
+    return this.isEditMode ? 'Modifier le profil' : 'Nouveau professeur';
   }
 
   getErrorMessage(controlName: keyof typeof this.form.controls): string {
     const control = this.form.controls[controlName];
-    if (control.hasError('required')) {
-      return 'This field is required.';
+    if (control.hasError('required') || control.hasError('nonEmptyArray')) {
+      return 'Ce champ est obligatoire.';
     }
     if (controlName === 'email' && control.hasError('email')) {
-      return 'Enter a valid email address.';
+      return 'Adresse e-mail invalide.';
     }
     if (controlName === 'fullName' && control.hasError('minlength')) {
-      return 'Full name needs at least 3 characters.';
+      return 'Le nom doit contenir au moins 3 caractères.';
     }
     if (controlName === 'phone' && control.hasError('pattern')) {
-      return 'Enter a valid phone number.';
+      return 'Numéro de téléphone invalide.';
     }
     if (controlName === 'salary' && control.hasError('min')) {
-      return 'Salary must be 0 or higher.';
+      return 'Le salaire doit être supérieur ou égal à 0.';
     }
-    return 'Please correct the highlighted field.';
+    return 'Veuillez corriger ce champ.';
   }
 
   save(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      this.snackBar.open('Please fix validation errors before saving.', 'Close', {
+      this.snackBar.open('Veuillez corriger les erreurs avant d\'enregistrer.', 'Fermer', {
         duration: 3000,
       });
       return;
@@ -146,13 +146,13 @@ export class TeacherFormDialog {
     action.subscribe({
       next: () => {
         const message = this.isEditMode
-          ? 'Teacher updated successfully.'
-          : 'Teacher created successfully.';
-        this.snackBar.open(message, 'Close', { duration: 3000 });
+          ? 'Professeur modifié avec succès.'
+          : 'Professeur enregistré avec succès.';
+        this.snackBar.open(message, 'Fermer', { duration: 3000 });
         this.dialogRef.close({ saved: true });
       },
       error: () => {
-        this.snackBar.open('Unable to save teacher. Please try again.', 'Close', {
+        this.snackBar.open('Impossible d\'enregistrer le professeur.', 'Fermer', {
           duration: 3000,
         });
         this.saveLoading.set(false);

@@ -275,6 +275,27 @@
       "photo": "",
       "attendanceRate": 0,
       "id": "5cVbhKy0drw"
+    },
+    {
+      "fullName": "hhhhh",
+      "phone": "12345678",
+      "parentPhone": "2346745678",
+      "address": "sel",
+      "schoolLevel": "2ème année bac",
+      "subjects": [
+        "Mathématiques",
+        "Physique"
+      ],
+      "groups": [
+        "mathA"
+      ],
+      "registrationDate": "2026-05-29",
+      "monthlyPayment": 1344,
+      "paymentStatus": "en retard",
+      "notes": "",
+      "photo": "",
+      "attendanceRate": 0,
+      "id": "YTwzBkK-rVM"
     }
   ],
   "teachers": [
@@ -293,7 +314,7 @@
         "Math Bac 1"
       ],
       "hireDate": "2026-01-10",
-      "paymentStatus": "en attente",
+      "paymentStatus": "payé",
       "notes": "Excellent professeur",
       "id": "1"
     },
@@ -374,6 +395,44 @@
       "paymentStatus": "en attente",
       "notes": "",
       "id": "QZfeZmfDfb8"
+    },
+    {
+      "fullName": "ggggg",
+      "email": "fatimaelaroussi1@gmail.com",
+      "phone": "0679594977",
+      "subjects": [
+        "Mathématiques"
+      ],
+      "schoolLevels": [
+        "1ère année collège"
+      ],
+      "salary": 23456,
+      "groups": [
+        "GRA"
+      ],
+      "hireDate": "2026-05-29",
+      "paymentStatus": "en attente",
+      "notes": "",
+      "id": "l_VLVmeAz2o"
+    },
+    {
+      "fullName": "RRR",
+      "email": "RRR@gmail.com",
+      "phone": "1234567",
+      "subjects": [
+        "Mathématiques"
+      ],
+      "schoolLevels": [
+        "1ère année collège"
+      ],
+      "salary": 7800,
+      "groups": [
+        "MATHA"
+      ],
+      "hireDate": "2026-05-29",
+      "paymentStatus": "en attente",
+      "notes": "",
+      "id": "SAlhvAML2rQ"
     }
   ],
   "levels": [
@@ -387,6 +446,12 @@
       "id": "2",
       "name": "2ème année bac",
       "category": "lycée"
+    },
+    {
+      "name": "Tronc Commun",
+      "category": "lycée",
+      "description": "",
+      "id": "VmMiPp2owjw"
     }
   ],
   "subjects": [
@@ -406,6 +471,15 @@
         2
       ],
       "color": "#10b981"
+    },
+    {
+      "name": "SVT",
+      "schoolLevels": [
+        "2"
+      ],
+      "color": "#4caf50",
+      "description": "",
+      "id": "H1ZYg7YwCv4"
     }
   ],
   "groups": [
@@ -444,6 +518,29 @@
       ],
       "createdAt": "2026-05-29",
       "id": "eTgekhyEPs8"
+    },
+    {
+      "name": "PHYSIC B",
+      "subjectId": 2,
+      "schoolLevelId": 2,
+      "teacherId": 3,
+      "room": "SALLE 2",
+      "maxStudents": 24,
+      "studentIds": [],
+      "schedules": [
+        {
+          "day": "Vendredi",
+          "startTime": "18:00",
+          "endTime": "20:00"
+        },
+        {
+          "day": "Samedi",
+          "startTime": "20:00",
+          "endTime": "22:00"
+        }
+      ],
+      "createdAt": "2026-05-29",
+      "id": "QOe7YzydoUc"
     }
   ],
   "payments": [
@@ -453,9 +550,9 @@
       "amount": 12345,
       "month": "2026-10",
       "dueDate": "2026-09-01",
-      "status": "en attente",
+      "status": "payé",
       "method": null,
-      "paidDate": null,
+      "paidDate": "2026-05-29",
       "createdAt": "2026-05-29T13:55:08.318Z",
       "id": "-E2LXkLNRck"
     },
@@ -465,7 +562,7 @@
       "amount": 700,
       "month": "2026-05",
       "dueDate": "2026-05-01",
-      "status": "en attente",
+      "status": "en retard",
       "method": null,
       "paidDate": null,
       "createdAt": "2026-05-29T13:55:45.786Z",
@@ -500,6 +597,20 @@
       "createdAt": "2026-05-29T15:06:52.927Z",
       "updatedAt": "2026-05-29T15:06:52.927Z",
       "id": "GtwKTA06VM4"
+    },
+    {
+      "title": "descktop",
+      "category": "équipement",
+      "amount": 1500,
+      "date": "2026-06-04",
+      "month": "2026-06",
+      "paidDate": null,
+      "status": "en attente",
+      "recurrence": "unique",
+      "method": "espèces",
+      "createdAt": "2026-05-29T17:41:29.667Z",
+      "updatedAt": "2026-05-29T17:41:29.667Z",
+      "id": "e_3ZucMP6DQ"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

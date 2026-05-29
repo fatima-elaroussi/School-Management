@@ -77,7 +77,7 @@ export class GroupFormDialog {
   });
 
   get title(): string {
-    return this.isEditMode ? 'Edit group' : 'Create group';
+    return this.isEditMode ? 'Modifier le groupe' : 'Nouveau groupe';
   }
 
   get scheduleControls() {
@@ -108,7 +108,7 @@ export class GroupFormDialog {
   save(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      this.snackBar.open('Please complete all required fields.', 'Close', { duration: 3000 });
+      this.snackBar.open('Veuillez compléter tous les champs obligatoires.', 'Fermer', { duration: 3000 });
       return;
     }
 
@@ -138,14 +138,14 @@ export class GroupFormDialog {
     action.subscribe({
       next: () => {
         this.snackBar.open(
-          this.isEditMode ? 'Group updated successfully.' : 'Group created successfully.',
-          'Close',
+          this.isEditMode ? 'Groupe modifié avec succès.' : 'Groupe créé avec succès.',
+          'Fermer',
           { duration: 3000 },
         );
         this.dialogRef.close({ saved: true });
       },
       error: () => {
-        this.snackBar.open('Unable to save group.', 'Close', { duration: 3000 });
+        this.snackBar.open('Impossible d\'enregistrer le groupe.', 'Fermer', { duration: 3000 });
         this.saveLoading.set(false);
       },
       complete: () => {

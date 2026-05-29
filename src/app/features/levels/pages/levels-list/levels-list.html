@@ -1,100 +1,80 @@
 <section class="levels-page">
-  <div class="page-header">
+  <header class="page-header-row">
     <div>
-      <p class="eyebrow">School levels</p>
-      <h1>Level management</h1>
-      <p class="subtitle">
-        Manage school levels with a polished dashboard experience. Search, filter, and maintain each
-        academic stage from a responsive admin view.
+      <p class="page-eyebrow">Niveaux scolaires</p>
+      <h1 class="page-title">Gestion des niveaux</h1>
+      <p class="page-subtitle">
+        Gérez les niveaux scolaires, recherchez et maintenez chaque cycle académique.
       </p>
     </div>
-
     <button mat-flat-button color="primary" type="button" (click)="openLevelDialog()">
       <mat-icon>add_circle</mat-icon>
-      Add level
+      Ajouter un niveau
     </button>
-  </div>
+  </header>
 
   <div class="filter-bar">
-    <mat-form-field appearance="fill" class="filter-field search-field">
-      <mat-label>Search levels</mat-label>
-      <input matInput placeholder="Search by name, category or description" [(ngModel)]="search" />
-      <button
-        mat-icon-button
-        matSuffix
-        *ngIf="search"
-        aria-label="Clear search"
-        type="button"
-        (click)="search = ''"
-      >
+    <mat-form-field appearance="outline" class="filter-field search-field">
+      <mat-label>Rechercher</mat-label>
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput placeholder="Nom, catégorie ou description…" [(ngModel)]="search" />
+      <button mat-icon-button matSuffix *ngIf="search" type="button" (click)="search = ''">
         <mat-icon>close</mat-icon>
       </button>
     </mat-form-field>
 
-    <mat-form-field appearance="fill" class="filter-field">
-      <mat-label>Category</mat-label>
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Catégorie</mat-label>
       <mat-select [(ngModel)]="categoryFilter">
-        <mat-option *ngFor="let option of categoryOptions" [value]="option.value">
-          {{ option.label }}
-        </mat-option>
+        <mat-option *ngFor="let opt of categoryOptions" [value]="opt.value">{{ opt.label }}</mat-option>
       </mat-select>
     </mat-form-field>
 
-    <div class="filter-summary">
-      <span>{{ totalLevels() }} levels</span>
-      <span>Page {{ pageIndex() + 1 }} of {{ pageCount() }}</span>
+    <div class="filter-meta">
+      <span class="filter-count">{{ totalLevels() }} niveau(x)</span>
+      <span class="filter-page">Page {{ pageIndex() + 1 }} / {{ pageCount() }}</span>
     </div>
   </div>
 
   <div class="content-panel">
     <div *ngIf="loading(); else levelsContent" class="state-panel loading-state">
-      <mat-progress-spinner diameter="52" mode="indeterminate"></mat-progress-spinner>
-      <p>Loading school levels…</p>
+      <mat-progress-spinner diameter="40" mode="indeterminate"></mat-progress-spinner>
+      <p>Chargement des niveaux…</p>
     </div>
 
     <ng-template #levelsContent>
       <div *ngIf="pagedLevels().length > 0; else emptyState">
+
         <div class="desktop-table">
-          <table mat-table [dataSource]="dataSource" class="mat-elevation-z3">
+          <table mat-table [dataSource]="dataSource">
             <ng-container matColumnDef="name">
-              <th mat-header-cell *matHeaderCellDef>Level name</th>
+              <th mat-header-cell *matHeaderCellDef>Nom du niveau</th>
               <td mat-cell *matCellDef="let level">{{ level.name }}</td>
             </ng-container>
 
             <ng-container matColumnDef="category">
-              <th mat-header-cell *matHeaderCellDef>Category</th>
+              <th mat-header-cell *matHeaderCellDef>Catégorie</th>
               <td mat-cell *matCellDef="let level">{{ level.category }}</td>
             </ng-container>
 
             <ng-container matColumnDef="description">
               <th mat-header-cell *matHeaderCellDef>Description</th>
               <td mat-cell *matCellDef="let level">
-                <span class="description-cell">{{
-                  level.description || 'No description available'
-                }}</span>
+                <span class="description-cell">{{ level.description || 'Aucune description' }}</span>
               </td>
             </ng-container>
 
             <ng-container matColumnDef="actions">
               <th mat-header-cell *matHeaderCellDef></th>
               <td mat-cell *matCellDef="let level" class="actions-cell">
-                <button
-                  mat-icon-button
-                  type="button"
-                  aria-label="Edit level"
-                  (click)="openLevelDialog(level)"
-                >
-                  <mat-icon>edit</mat-icon>
-                </button>
-                <button
-                  mat-icon-button
-                  color="warn"
-                  type="button"
-                  aria-label="Delete level"
-                  (click)="deleteLevel(level)"
-                >
-                  <mat-icon>delete</mat-icon>
-                </button>
+                <div class="action-btns">
+                  <button mat-icon-button matTooltip="Modifier" type="button" (click)="openLevelDialog(level)">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button mat-icon-button color="warn" matTooltip="Supprimer" type="button" (click)="deleteLevel(level)">
+                    <mat-icon>delete_outline</mat-icon>
+                  </button>
+                </div>
               </td>
             </ng-container>
 
@@ -113,47 +93,33 @@
         </div>
 
         <div class="mobile-cards">
-          <ng-container *ngFor="let level of pagedLevels(); trackBy: trackById">
-            <mat-card class="level-card">
-              <div class="card-header">
-                <div>
-                  <strong>{{ level.name }}</strong>
-                  <span class="category-chip">{{ level.category }}</span>
-                </div>
-                <div class="card-actions">
-                  <button
-                    mat-icon-button
-                    type="button"
-                    aria-label="Edit level"
-                    (click)="openLevelDialog(level)"
-                  >
-                    <mat-icon>edit</mat-icon>
-                  </button>
-                  <button
-                    mat-icon-button
-                    color="warn"
-                    type="button"
-                    aria-label="Delete level"
-                    (click)="deleteLevel(level)"
-                  >
-                    <mat-icon>delete</mat-icon>
-                  </button>
-                </div>
+          <mat-card class="level-card" *ngFor="let level of pagedLevels(); trackBy: trackById">
+            <div class="card-header">
+              <div>
+                <strong>{{ level.name }}</strong>
+                <span class="category-chip">{{ level.category }}</span>
               </div>
-
-              <p class="level-description">{{ level.description || 'No description provided.' }}</p>
-            </mat-card>
-          </ng-container>
+              <div class="action-btns">
+                <button mat-icon-button type="button" (click)="openLevelDialog(level)">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" type="button" (click)="deleteLevel(level)">
+                  <mat-icon>delete_outline</mat-icon>
+                </button>
+              </div>
+            </div>
+            <p class="level-description">{{ level.description || 'Aucune description fournie.' }}</p>
+          </mat-card>
         </div>
       </div>
 
       <ng-template #emptyState>
         <div class="state-panel empty-state">
           <mat-icon>search_off</mat-icon>
-          <h2>No levels found</h2>
-          <p>Adjust the search or category filter, or add a new school level to get started.</p>
+          <h2>Aucun niveau trouvé</h2>
+          <p>Ajustez les filtres ou ajoutez un nouveau niveau scolaire.</p>
           <button mat-flat-button color="primary" type="button" (click)="openLevelDialog()">
-            Add new level
+            Ajouter un niveau
           </button>
         </div>
       </ng-template>

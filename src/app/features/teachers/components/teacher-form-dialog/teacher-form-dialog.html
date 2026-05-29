@@ -1,133 +1,217 @@
-<div class="teacher-form-dialog">
+<div class="teacher-dialog">
+
+  <!-- ── Header ────────────────────────────────────────────────────────────── -->
   <header class="dialog-header">
-    <div>
-      <h2>{{ title }}</h2>
-      <p>Assign subjects, grades and payment details in one clean form.</p>
+    <div class="header-content">
+      <div class="header-icon">
+        <mat-icon>person</mat-icon>
+      </div>
+      <div>
+        <p class="eyebrow">Corps enseignant · Professeurs</p>
+        <h2 class="dialog-title">{{ title }}</h2>
+        <p class="dialog-subtitle">
+          {{ isEditMode
+            ? 'Modifiez le profil et les informations de ce professeur.'
+            : 'Enregistrez un nouveau membre du corps enseignant.' }}
+        </p>
+      </div>
     </div>
-    <button mat-icon-button type="button" aria-label="Close dialog" (click)="cancel()">
+    <button mat-icon-button type="button" class="close-btn" (click)="cancel()">
       <mat-icon>close</mat-icon>
     </button>
   </header>
 
-  <form [formGroup]="form" class="dialog-form" (ngSubmit)="save()">
-    <div class="dialog-body">
-      <div class="form-grid">
+  <form class="dialog-form" [formGroup]="form" (ngSubmit)="save()">
+
+    <!-- ── Section 1 : Identité ──────────────────────────────────────────── -->
+    <div class="form-section">
+      <p class="section-label">
+        <mat-icon>badge</mat-icon>
+        Identité
+      </p>
+
+      <div class="form-row-2">
         <mat-form-field appearance="outline">
-          <mat-label>Full name</mat-label>
-          <input matInput formControlName="fullName" placeholder="Amélie Dubois" />
-          <mat-icon matSuffix>person</mat-icon>
+          <mat-label>Nom complet</mat-label>
+          <mat-icon matPrefix>person</mat-icon>
+          <input matInput formControlName="fullName" placeholder="Fatima El Alaoui" />
           <mat-error *ngIf="controls.fullName.touched && controls.fullName.invalid">
             {{ getErrorMessage('fullName') }}
           </mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-      <mat-label>Email</mat-label>
-      <input matInput type="email" formControlName="email" placeholder="name@school.edu" />
-      <mat-icon matSuffix>mail</mat-icon>
-      <mat-error *ngIf="controls.email.touched && controls.email.invalid">
-        {{ getErrorMessage('email') }}
-      </mat-error>
-    </mat-form-field>
+          <mat-label>Adresse e-mail</mat-label>
+          <mat-icon matPrefix>mail</mat-icon>
+          <input matInput type="email" formControlName="email" placeholder="prof@etablissement.ma" />
+          <mat-error *ngIf="controls.email.touched && controls.email.invalid">
+            {{ getErrorMessage('email') }}
+          </mat-error>
+        </mat-form-field>
+      </div>
 
-    <mat-form-field appearance="outline">
-      <mat-label>Phone</mat-label>
-      <input matInput formControlName="phone" placeholder="+33 1 23 45 67 89" />
-      <mat-icon matSuffix>phone</mat-icon>
-      <mat-error *ngIf="controls.phone.touched && controls.phone.invalid">
-        {{ getErrorMessage('phone') }}
-      </mat-error>
-    </mat-form-field>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Téléphone</mat-label>
+        <mat-icon matPrefix>phone</mat-icon>
+        <input matInput formControlName="phone" placeholder="06 12 34 56 78" />
+        <mat-error *ngIf="controls.phone.touched && controls.phone.invalid">
+          {{ getErrorMessage('phone') }}
+        </mat-error>
+      </mat-form-field>
+    </div>
 
-    <mat-form-field appearance="outline">
-      <mat-label>Salary</mat-label>
-      <input matInput type="number" min="0" formControlName="salary" placeholder="4200" />
-      <mat-icon matSuffix>attach_money</mat-icon>
-      <mat-error *ngIf="controls.salary.touched && controls.salary.invalid">
-        {{ getErrorMessage('salary') }}
-      </mat-error>
-    </mat-form-field>
+    <!-- ── Section 2 : Enseignement ─────────────────────────────────────── -->
+    <div class="form-section">
+      <p class="section-label">
+        <mat-icon>menu_book</mat-icon>
+        Enseignement
+      </p>
 
-    <mat-form-field appearance="outline">
-      <mat-label>Subjects</mat-label>
-      <mat-select formControlName="subjects" multiple [disabled]="lookupsLoading()">
-        <mat-select-trigger>
-          <div class="chip-trigger">
-            <mat-chip *ngFor="let subject of controls.subjects.value" selected>{{
-              subject
-            }}</mat-chip>
-            <span class="placeholder" *ngIf="!controls.subjects.value.length">Select subjects</span>
+      <div class="form-row-2">
+        <mat-form-field appearance="outline">
+          <mat-label>Matières enseignées</mat-label>
+          <mat-icon matPrefix>school</mat-icon>
+          <mat-select formControlName="subjects" multiple [disabled]="lookupsLoading()">
+            <mat-select-trigger>
+              <span *ngIf="controls.subjects.value.length === 0" class="placeholder-text">
+                Sélectionner des matières
+              </span>
+              <span *ngIf="controls.subjects.value.length > 0">
+                {{ controls.subjects.value.join(', ') }}
+              </span>
+            </mat-select-trigger>
+            <mat-option *ngFor="let subject of subjectNames()" [value]="subject">
+              {{ subject }}
+            </mat-option>
+          </mat-select>
+          <mat-hint *ngIf="lookupsLoading()">Chargement des matières…</mat-hint>
+          <mat-error *ngIf="controls.subjects.touched && controls.subjects.invalid">
+            {{ getErrorMessage('subjects') }}
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Niveaux scolaires</mat-label>
+          <mat-icon matPrefix>layers</mat-icon>
+          <mat-select formControlName="schoolLevels" multiple [disabled]="lookupsLoading()">
+            <mat-select-trigger>
+              <span *ngIf="controls.schoolLevels.value.length === 0" class="placeholder-text">
+                Sélectionner des niveaux
+              </span>
+              <span *ngIf="controls.schoolLevels.value.length > 0">
+                {{ controls.schoolLevels.value.join(', ') }}
+              </span>
+            </mat-select-trigger>
+            <mat-option *ngFor="let level of schoolLevelNames()" [value]="level">
+              {{ level }}
+            </mat-option>
+          </mat-select>
+          <mat-hint *ngIf="lookupsLoading()">Chargement des niveaux…</mat-hint>
+          <mat-error *ngIf="controls.schoolLevels.touched && controls.schoolLevels.invalid">
+            {{ getErrorMessage('schoolLevels') }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Selected chips preview -->
+      <div class="chips-preview" *ngIf="controls.subjects.value.length || controls.schoolLevels.value.length">
+        <div class="chips-group" *ngIf="controls.subjects.value.length">
+          <span class="chips-label">Matières</span>
+          <div class="chips-row">
+            <span class="tag-badge" *ngFor="let s of controls.subjects.value">{{ s }}</span>
           </div>
-        </mat-select-trigger>
-        <mat-option *ngFor="let subject of subjectNames()" [value]="subject">
-          {{ subject }}
-        </mat-option>
-      </mat-select>
-      <mat-hint *ngIf="lookupsLoading()">Loading subjects…</mat-hint>
-      <mat-error *ngIf="controls.subjects.touched && controls.subjects.invalid">
-        {{ getErrorMessage('subjects') }}
-      </mat-error>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>School levels</mat-label>
-      <mat-select formControlName="schoolLevels" multiple [disabled]="lookupsLoading()">
-        <mat-option *ngFor="let level of schoolLevelNames()" [value]="level">
-          {{ level }}
-        </mat-option>
-      </mat-select>
-      <mat-hint *ngIf="lookupsLoading()">Loading levels…</mat-hint>
-      <mat-error *ngIf="controls.schoolLevels.touched && controls.schoolLevels.invalid">
-        {{ getErrorMessage('schoolLevels') }}
-      </mat-error>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Groups</mat-label>
-      <input matInput formControlName="groups" placeholder="Group A, Group B" />
-      <mat-hint>Enter comma-separated groups</mat-hint>
-      <mat-error *ngIf="controls.groups.touched && controls.groups.invalid">
-        {{ getErrorMessage('groups') }}
-      </mat-error>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Payment status</mat-label>
-      <mat-select formControlName="paymentStatus">
-        <mat-option *ngFor="let option of paymentStatusOptions" [value]="option.value">
-          {{ option.label }}
-        </mat-option>
-      </mat-select>
-      <mat-error *ngIf="controls.paymentStatus.touched && controls.paymentStatus.invalid">
-        {{ getErrorMessage('paymentStatus') }}
-      </mat-error>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="full-width notes-field">
-      <mat-label>Notes</mat-label>
-      <textarea
-        matInput
-        rows="5"
-        formControlName="notes"
-        placeholder="Add internal notes..."
-      ></textarea>
-    </mat-form-field>
-
-    <div class="chip-preview" *ngIf="controls.subjects.value.length">
-      <span class="preview-label">Selected subjects</span>
-      <div class="chip-wrap">
-        <mat-chip *ngFor="let subject of controls.subjects.value">{{ subject }}</mat-chip>
+        </div>
+        <div class="chips-group" *ngIf="controls.schoolLevels.value.length">
+          <span class="chips-label">Niveaux</span>
+          <div class="chips-row">
+            <span class="tag-badge tag-badge--level" *ngFor="let l of controls.schoolLevels.value">{{ l }}</span>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
 
-  <div class="dialog-actions">
-    <button mat-stroked-button type="button" (click)="cancel()">Cancel</button>
-    <button mat-flat-button color="primary" type="submit" [disabled]="saveLoading()">
-      <mat-spinner diameter="20" mode="indeterminate" *ngIf="saveLoading()"></mat-spinner>
-      <span *ngIf="!saveLoading()">{{ isEditMode ? 'Update teacher' : 'Save teacher' }}</span>
-    </button>
-  </div>
-</form>
+    <!-- ── Section 3 : Informations administratives ──────────────────────── -->
+    <div class="form-section">
+      <p class="section-label">
+        <mat-icon>admin_panel_settings</mat-icon>
+        Informations administratives
+      </p>
+
+      <div class="form-row-2">
+        <mat-form-field appearance="outline">
+          <mat-label>Salaire (MAD)</mat-label>
+          <mat-icon matPrefix>payments</mat-icon>
+          <input matInput type="number" min="0" formControlName="salary" placeholder="4 000" />
+          <span matSuffix>MAD</span>
+          <mat-error *ngIf="controls.salary.touched && controls.salary.invalid">
+            {{ getErrorMessage('salary') }}
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Statut de paiement</mat-label>
+          <mat-icon matPrefix>flag</mat-icon>
+          <mat-select formControlName="paymentStatus">
+            <mat-option *ngFor="let opt of paymentStatusOptions" [value]="opt.value">
+              <div class="status-option">
+                <span class="status-dot" [ngClass]="opt.css"></span>
+                {{ opt.label }}
+              </div>
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="controls.paymentStatus.touched && controls.paymentStatus.invalid">
+            {{ getErrorMessage('paymentStatus') }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Groupes attribués</mat-label>
+        <mat-icon matPrefix>group_work</mat-icon>
+        <input matInput formControlName="groups" placeholder="Groupe A, Groupe B, Groupe C" />
+        <mat-hint>Séparez les groupes par des virgules</mat-hint>
+        <mat-error *ngIf="controls.groups.touched && controls.groups.invalid">
+          {{ getErrorMessage('groups') }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <!-- ── Section 4 : Notes ─────────────────────────────────────────────── -->
+    <div class="form-section">
+      <p class="section-label">
+        <mat-icon>notes</mat-icon>
+        Notes
+        <span class="section-optional">(optionnel)</span>
+      </p>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Commentaires internes</mat-label>
+        <textarea
+          matInput
+          formControlName="notes"
+          rows="3"
+          placeholder="Informations complémentaires sur ce professeur…"
+        ></textarea>
+      </mat-form-field>
+    </div>
+
+    <!-- ── Footer ────────────────────────────────────────────────────────── -->
+    <footer class="dialog-footer">
+      <button mat-stroked-button type="button" (click)="cancel()">
+        Annuler
+      </button>
+      <button
+        mat-flat-button
+        color="primary"
+        type="submit"
+        [disabled]="saveLoading()"
+        class="save-btn"
+      >
+        <mat-progress-spinner *ngIf="saveLoading()" diameter="18" mode="indeterminate" />
+        <mat-icon *ngIf="!saveLoading()">{{ isEditMode ? 'save' : 'add_circle' }}</mat-icon>
+        <span>{{ isEditMode ? 'Enregistrer les modifications' : 'Enregistrer le professeur' }}</span>
+      </button>
+    </footer>
+
+  </form>
 </div>

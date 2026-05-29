@@ -13,6 +13,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { SubjectFormDialog } from '../../components/subject-form-dialog/subject-form-dialog';
 import { LookupsService } from '../../../../core/services/lookups.service';
@@ -39,6 +40,7 @@ import { Subject as SubjectModel } from '../../subject.model';
     MatSnackBarModule,
     MatProgressSpinnerModule,
     MatTableModule,
+    MatTooltipModule,
   ],
   templateUrl: './subjects-list.html',
   styleUrls: ['./subjects-list.scss'],
@@ -194,10 +196,10 @@ export class SubjectsList {
     const dialogRef = this.dialog.open(ConfirmDialog, {
       width: '420px',
       data: {
-        title: 'Delete subject',
-        message: `Delete ${subject.name}? This cannot be undone.`,
-        confirmText: 'Delete',
-        cancelText: 'Cancel',
+        title: 'Supprimer la matière',
+        message: `Supprimer "${subject.name}" ? Cette action est irréversible.`,
+        confirmText: 'Supprimer',
+        cancelText: 'Annuler',
       },
     });
 
@@ -209,13 +211,13 @@ export class SubjectsList {
       this.loading.set(true);
       this.subjectsService.deleteSubject(subject.id).subscribe({
         next: () => {
-          this.snackBar.open('Subject deleted successfully.', 'Close', {
+          this.snackBar.open('Matière supprimée.', 'Fermer', {
             duration: 3000,
           });
           this.loadSubjects();
         },
         error: () => {
-          this.snackBar.open('Unable to delete subject. Please try again.', 'Close', {
+          this.snackBar.open('Impossible de supprimer la matière.', 'Fermer', {
             duration: 3000,
           });
           this.loading.set(false);

@@ -60,8 +60,8 @@ export class StudentFormDialog {
   );
 
   readonly paymentStatusOptions = [
-    { value: 'payé', label: 'Payé' },
-    { value: 'en retard', label: 'En retard' },
+    { value: 'payé',       label: 'Payé',       css: 'status-paid' },
+    { value: 'en retard',  label: 'En retard',  css: 'status-late' },
   ];
 
   private readonly fieldLabels: Record<string, string> = {
@@ -121,11 +121,7 @@ export class StudentFormDialog {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       const invalidFields = this.getInvalidControlLabels();
-      const message = invalidFields.length
-        ? `Please fix: ${invalidFields.join(', ')}.`
-        : 'Please complete all required fields before saving.';
-
-      this.snackBar.open(message, 'Close', {
+      this.snackBar.open('Veuillez corriger les erreurs avant d\'enregistrer.', 'Fermer', {
         duration: 3000,
       });
       return;
@@ -156,13 +152,13 @@ export class StudentFormDialog {
       this.saveLoading.set(true);
       this.studentsService.updateStudent(this.data.student.id, payload).subscribe({
         next: () => {
-          this.snackBar.open('Student updated successfully.', 'Close', {
+          this.snackBar.open('Étudiant modifié avec succès.', 'Fermer', {
             duration: 3000,
           });
           this.dialogRef.close({ updated: true });
         },
         error: () => {
-          this.snackBar.open('Unable to update student. Please try again.', 'Close', {
+          this.snackBar.open('Impossible de modifier l\'étudiant.', 'Fermer', {
             duration: 3000,
           });
           this.saveLoading.set(false);
@@ -177,13 +173,13 @@ export class StudentFormDialog {
     this.saveLoading.set(true);
     this.studentsService.createStudent(payload).subscribe({
       next: () => {
-        this.snackBar.open('Student created successfully.', 'Close', {
+        this.snackBar.open('Étudiant enregistré avec succès.', 'Fermer', {
           duration: 3000,
         });
         this.dialogRef.close({ created: true });
       },
       error: () => {
-        this.snackBar.open('Unable to create student. Please try again.', 'Close', {
+        this.snackBar.open('Impossible d\'enregistrer l\'étudiant.', 'Fermer', {
           duration: 3000,
         });
         this.saveLoading.set(false);

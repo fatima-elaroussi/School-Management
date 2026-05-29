@@ -32,129 +32,129 @@ interface LevelDialogData {
     MatProgressSpinnerModule,
   ],
   template: `
-    <div class="dialog-shell">
-      <div class="dialog-header">
-        <div>
-          <p class="eyebrow">Level details</p>
-          <h2>{{ title }}</h2>
-          <p>
-            Enter the school level name, choose a category, and provide a short description for
-            better visibility.
-          </p>
+    <div class="level-dialog">
+
+      <header class="dialog-header">
+        <div class="header-content">
+          <div class="header-icon"><mat-icon>school</mat-icon></div>
+          <div>
+            <p class="eyebrow">Niveaux scolaires · Organisation</p>
+            <h2 class="dialog-title">{{ title }}</h2>
+            <p class="dialog-subtitle">
+              {{ isEditMode
+                ? 'Modifiez les informations de ce niveau scolaire.'
+                : 'Créez un nouveau niveau en définissant son nom et sa catégorie.' }}
+            </p>
+          </div>
         </div>
-        <button mat-icon-button aria-label="Close dialog" type="button" (click)="cancel()">
+        <button mat-icon-button type="button" class="close-btn" (click)="cancel()">
           <mat-icon>close</mat-icon>
         </button>
-      </div>
+      </header>
 
-      <form class="dialog-form" [formGroup]="form">
-        <mat-form-field appearance="fill" class="field-full">
-          <mat-label>Level name</mat-label>
-          <input matInput formControlName="name" />
-          <mat-error *ngIf="controls.name.invalid">{{ getErrorMessage('name') }}</mat-error>
-        </mat-form-field>
+      <form class="dialog-form" [formGroup]="form" (ngSubmit)="save()">
 
-        <mat-form-field appearance="fill" class="field-full">
-          <mat-label>Category</mat-label>
-          <mat-select formControlName="category">
-            <mat-option *ngFor="let option of categoryOptions" [value]="option.value">
-              {{ option.label }}
-            </mat-option>
-          </mat-select>
-          <mat-error *ngIf="controls.category.invalid">{{ getErrorMessage('category') }}</mat-error>
-        </mat-form-field>
+        <div class="form-section">
+          <p class="section-label"><mat-icon>info</mat-icon>Informations du niveau</p>
 
-        <mat-form-field appearance="fill" class="field-full">
-          <mat-label>Description</mat-label>
-          <textarea matInput formControlName="description" rows="4"></textarea>
-        </mat-form-field>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Nom du niveau</mat-label>
+            <mat-icon matPrefix>layers</mat-icon>
+            <input matInput formControlName="name" placeholder="Ex : 2ème année bac" />
+            <mat-error *ngIf="controls.name.invalid">{{ getErrorMessage('name') }}</mat-error>
+          </mat-form-field>
 
-        <div class="dialog-actions">
-          <button mat-button type="button" (click)="cancel()">Cancel</button>
-          <button
-            mat-flat-button
-            color="primary"
-            type="button"
-            [disabled]="saveLoading()"
-            (click)="save()"
-          >
-            <mat-progress-spinner
-              *ngIf="saveLoading()"
-              diameter="18"
-              mode="indeterminate"
-            ></mat-progress-spinner>
-            {{ isEditMode ? 'Save changes' : 'Create level' }}
-          </button>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Catégorie</mat-label>
+            <mat-icon matPrefix>category</mat-icon>
+            <mat-select formControlName="category">
+              <mat-option *ngFor="let opt of categoryOptions" [value]="opt.value">
+                {{ opt.label }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="controls.category.invalid">{{ getErrorMessage('category') }}</mat-error>
+          </mat-form-field>
         </div>
+
+        <div class="form-section">
+          <p class="section-label">
+            <mat-icon>notes</mat-icon>Description
+            <span class="section-optional">(optionnel)</span>
+          </p>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Description</mat-label>
+            <textarea matInput formControlName="description" rows="3"
+              placeholder="Courte description du niveau…"></textarea>
+          </mat-form-field>
+        </div>
+
+        <footer class="dialog-footer">
+          <button mat-stroked-button type="button" (click)="cancel()">Annuler</button>
+          <button mat-flat-button color="primary" type="submit" class="save-btn" [disabled]="saveLoading()">
+            <mat-progress-spinner *ngIf="saveLoading()" diameter="18" mode="indeterminate" />
+            <mat-icon *ngIf="!saveLoading()">{{ isEditMode ? 'save' : 'add_circle' }}</mat-icon>
+            <span>{{ isEditMode ? 'Enregistrer les modifications' : 'Créer le niveau' }}</span>
+          </button>
+        </footer>
+
       </form>
     </div>
   `,
-  styles: [
-    `
-      .dialog-shell {
-        display: grid;
-        gap: 20px;
-        max-width: 100%;
-      }
-
-      .dialog-header {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        gap: 16px;
-      }
-
-      .dialog-header h2 {
-        margin: 0.35rem 0 0.5rem;
-        font-size: 1.65rem;
-      }
-
-      .dialog-header .eyebrow {
-        margin: 0;
-        font-size: 0.75rem;
-        color: #5f6370;
-        letter-spacing: 0.18em;
-        text-transform: uppercase;
-      }
-
-      .dialog-header p {
-        margin: 0;
-        color: #505763;
-        line-height: 1.65;
-      }
-
-      .dialog-form {
-        display: grid;
-        gap: 18px;
-      }
-
-      .field-full {
-        width: 100%;
-      }
-
-      .dialog-actions {
-        display: flex;
-        justify-content: flex-end;
-        gap: 12px;
-        flex-wrap: wrap;
-      }
-
-      mat-progress-spinner {
-        margin-right: 8px;
-      }
-
-      @media screen and (max-width: 620px) {
-        .dialog-header {
-          flex-direction: column;
-          align-items: stretch;
-        }
-
-        .dialog-actions {
-          justify-content: stretch;
-        }
-      }
-    `,
-  ],
+  styles: [`
+    .level-dialog {
+      display: flex; flex-direction: column;
+      width: 100%; max-width: 560px; overflow: hidden;
+    }
+    .dialog-header {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      gap: 16px; padding: 28px 28px 22px;
+      border-bottom: 1px solid rgba(30,60,100,0.09);
+      background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    }
+    .header-content { display: flex; gap: 16px; align-items: flex-start; }
+    .header-icon {
+      flex-shrink: 0; width: 48px; height: 48px; border-radius: 14px;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      display: grid; place-items: center;
+      box-shadow: 0 4px 14px rgba(37,99,235,0.35);
+    }
+    .header-icon mat-icon { color: #fff; font-size: 22px; width: 22px; height: 22px; }
+    .eyebrow { margin: 0 0 4px; font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; color: #7a8fa3; }
+    .dialog-title { margin: 0 0 6px; font-size: 1.45rem; font-weight: 700; letter-spacing: -0.02em; color: #0d1f35; }
+    .dialog-subtitle { margin: 0; font-size: 0.88rem; color: #3d5470; line-height: 1.5; }
+    .close-btn { flex-shrink: 0; color: #7a8fa3; }
+    .dialog-form { display: flex; flex-direction: column; overflow-y: auto; max-height: calc(90vh - 200px); }
+    .form-section { display: grid; gap: 14px; padding: 22px 28px; }
+    .form-section + .form-section { border-top: 1px solid rgba(30,60,100,0.07); }
+    .section-label {
+      display: flex; align-items: center; gap: 8px; margin: 0 0 2px;
+      font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.1em; color: #7a8fa3;
+    }
+    .section-label mat-icon { font-size: 16px; width: 16px; height: 16px; color: #2563eb; }
+    .section-optional { font-weight: 400; text-transform: none; letter-spacing: 0; color: #b0bec5; font-size: 0.75rem; }
+    .full-width { width: 100%; }
+    .dialog-footer {
+      display: flex; justify-content: flex-end; align-items: center;
+      gap: 12px; padding: 18px 28px 24px;
+      border-top: 1px solid rgba(30,60,100,0.09);
+      background: #fafcff; position: sticky; bottom: 0;
+    }
+    .save-btn {
+      display: flex; align-items: center; gap: 8px;
+      min-width: 220px; height: 42px;
+      border-radius: 10px !important; font-weight: 600 !important;
+    }
+    .save-btn mat-icon { font-size: 18px; width: 18px; height: 18px; }
+    .save-btn mat-progress-spinner { --mdc-circular-progress-active-indicator-color: #fff; }
+    @media (max-width: 600px) {
+      .dialog-header { padding: 20px 16px 16px; }
+      .form-section { padding: 18px 16px; }
+      .dialog-footer { padding: 14px 16px 20px; }
+      .header-content { flex-direction: column; gap: 10px; }
+      .save-btn { min-width: unset; flex: 1; }
+    }
+  `],
 })
 export class LevelFormDialog {
   private readonly fb = inject(FormBuilder);
@@ -179,7 +179,7 @@ export class LevelFormDialog {
   });
 
   get title(): string {
-    return this.isEditMode ? 'Edit school level' : 'Create school level';
+    return this.isEditMode ? 'Modifier le niveau' : 'Nouveau niveau scolaire';
   }
 
   get controls() {
@@ -190,20 +190,20 @@ export class LevelFormDialog {
     const control = this.form.controls[controlName];
 
     if (control.hasError('required')) {
-      return 'This field is required.';
+      return 'Ce champ est obligatoire.';
     }
 
     if (controlName === 'name' && control.hasError('minlength')) {
-      return 'Level name must be at least 2 characters.';
+      return 'Le nom doit contenir au moins 2 caractères.';
     }
 
-    return 'Please correct this field.';
+    return 'Veuillez corriger ce champ.';
   }
 
   save(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      this.snackBar.open('Please complete the form before saving.', 'Close', {
+      this.snackBar.open('Veuillez compléter le formulaire avant d\'enregistrer.', 'Fermer', {
         duration: 3000,
       });
       return;
@@ -225,14 +225,14 @@ export class LevelFormDialog {
     action.subscribe({
       next: () => {
         this.snackBar.open(
-          this.isEditMode ? 'Level updated successfully.' : 'Level created successfully.',
-          'Close',
+          this.isEditMode ? 'Niveau modifié avec succès.' : 'Niveau créé avec succès.',
+          'Fermer',
           { duration: 3000 },
         );
         this.dialogRef.close({ saved: true });
       },
       error: () => {
-        this.snackBar.open('Unable to save level. Please try again.', 'Close', {
+        this.snackBar.open('Impossible d\'enregistrer le niveau.', 'Fermer', {
           duration: 3000,
         });
         this.saveLoading.set(false);

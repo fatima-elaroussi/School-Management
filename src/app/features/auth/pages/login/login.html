@@ -1,134 +1,117 @@
 <div class="login-shell">
-  <mat-card class="login-card">
-    <div class="login-grid">
-      <div class="illustration" aria-hidden="true">
-        <div class="illustration-inner">
-          <svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid meet">
-            <defs>
-              <linearGradient id="g" x1="0" x2="1">
-                <stop offset="0" stop-color="#6C5CE7" />
-                <stop offset="1" stop-color="#00B894" />
-              </linearGradient>
-            </defs>
-            <rect x="0" y="0" width="800" height="600" fill="url(#g)" opacity="0.12"></rect>
-            <g transform="translate(80,80)">
-              <circle cx="200" cy="120" r="80" fill="#fff" opacity="0.06"></circle>
-              <rect
-                x="40"
-                y="40"
-                width="240"
-                height="160"
-                rx="12"
-                fill="#fff"
-                opacity="0.06"
-              ></rect>
-              <g transform="translate(20,220)">
-                <rect
-                  x="0"
-                  y="0"
-                  width="220"
-                  height="120"
-                  rx="10"
-                  fill="#fff"
-                  opacity="0.06"
-                ></rect>
-              </g>
-            </g>
-          </svg>
-          <div class="illustration-text">
-            <h3>Welcome back</h3>
-            <p>Sign in to manage attendance, students and finances.</p>
+
+  <div class="login-card">
+
+    <!-- ── Illustration panel ─────────────────────────────────────────────── -->
+    <div class="illustration-panel" aria-hidden="true">
+      <div class="illustration-content">
+        <div class="brand-logo">
+          <mat-icon>school</mat-icon>
+        </div>
+        <h2>Bienvenue</h2>
+        <p>Connectez-vous pour gérer les présences, les étudiants et les finances de votre établissement.</p>
+
+        <div class="illustration-features">
+          <div class="feature-item">
+            <mat-icon>groups</mat-icon>
+            <span>Gestion des étudiants</span>
+          </div>
+          <div class="feature-item">
+            <mat-icon>payments</mat-icon>
+            <span>Suivi financier</span>
+          </div>
+          <div class="feature-item">
+            <mat-icon>event_available</mat-icon>
+            <span>Contrôle des présences</span>
           </div>
         </div>
-      </div>
-
-      <div class="form-section">
-        <div class="form-header">
-          <h2>Sign in to SchoolManager</h2>
-          <!-- <button
-            mat-icon-button
-            class="theme-toggle"
-            (click)="toggleTheme()"
-            aria-label="Toggle theme"
-          >
-            <mat-icon>brightness_6</mat-icon>
-          </button> -->
-        </div>
-
-        <form [formGroup]="form" (ngSubmit)="submit()" class="login-form">
-          <div class="error-banner" *ngIf="errorMessage()">{{ errorMessage() }}</div>
-          <mat-form-field appearance="outline" class="full">
-            <mat-label>Email</mat-label>
-            <input
-              matInput
-              placeholder="name@school.com"
-              formControlName="email"
-              autocomplete="email"
-            />
-            <mat-icon matSuffix>mail</mat-icon>
-            <mat-error *ngIf="email?.touched && email?.hasError('required')"
-              >Email is required</mat-error
-            >
-            <mat-error *ngIf="email?.touched && email?.hasError('email')"
-              >Enter a valid email</mat-error
-            >
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="full">
-            <mat-label>Password</mat-label>
-            <input
-              matInput
-              type="password"
-              placeholder="••••••••"
-              formControlName="password"
-              autocomplete="current-password"
-            />
-            <mat-icon matSuffix>lock</mat-icon>
-            <mat-error *ngIf="password?.touched && password?.hasError('required')"
-              >Password is required</mat-error
-            >
-            <mat-error *ngIf="password?.touched && password?.hasError('minlength')"
-              >Password must be at least 6 characters</mat-error
-            >
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="full">
-            <mat-label>Role</mat-label>
-            <mat-select formControlName="role">
-              <mat-option *ngFor="let r of roles" [value]="r.value">{{ r.label }}</mat-option>
-            </mat-select>
-          </mat-form-field>
-
-          <div class="row between">
-            <mat-checkbox formControlName="remember">Remember me</mat-checkbox>
-            <a class="forgot" href="#">Forgot?</a>
-          </div>
-
-          <button
-            mat-flat-button
-            color="primary"
-            type="submit"
-            class="full login-btn"
-            [disabled]="isLoading()"
-          >
-            <mat-progress-spinner
-              *ngIf="isLoading()"
-              diameter="18"
-              mode="indeterminate"
-            ></mat-progress-spinner>
-            <span *ngIf="!isLoading()">Sign in</span>
-            <span *ngIf="isLoading()">Signing in...</span>
-          </button>
-
-          <div class="divider">or continue with</div>
-
-          <div class="socials row">
-            <button mat-stroked-button class="full">Sign in with Google</button>
-          </div>
-
-          <p class="signup">Don't have an account? <a href="#">Request access</a></p>
-        </form>
       </div>
     </div>
-  </mat-card>
+
+    <!-- ── Form panel ─────────────────────────────────────────────────────── -->
+    <div class="form-panel">
+      <div class="form-header">
+        <div class="form-brand">
+          <mat-icon class="brand-icon-small">school</mat-icon>
+          <span>School Admin</span>
+        </div>
+        <h1>Connexion</h1>
+        <p class="form-subtitle">Entrez vos identifiants pour accéder au tableau de bord.</p>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="login-form" novalidate>
+
+        <div class="error-banner" *ngIf="errorMessage()">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ errorMessage() }}</span>
+        </div>
+
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>Adresse e-mail</mat-label>
+          <input
+            matInput
+            type="email"
+            placeholder="nom@etablissement.com"
+            formControlName="email"
+            autocomplete="email"
+          />
+          <mat-icon matSuffix>mail_outline</mat-icon>
+          <mat-error *ngIf="email?.touched && email?.hasError('required')">
+            L'adresse e-mail est requise
+          </mat-error>
+          <mat-error *ngIf="email?.touched && email?.hasError('email')">
+            Adresse e-mail invalide
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>Mot de passe</mat-label>
+          <input
+            matInput
+            type="password"
+            placeholder="••••••••"
+            formControlName="password"
+            autocomplete="current-password"
+          />
+          <mat-icon matSuffix>lock_outline</mat-icon>
+          <mat-error *ngIf="password?.touched && password?.hasError('required')">
+            Le mot de passe est requis
+          </mat-error>
+          <mat-error *ngIf="password?.touched && password?.hasError('minlength')">
+            Le mot de passe doit contenir au moins 6 caractères
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>Rôle</mat-label>
+          <mat-select formControlName="role">
+            <mat-option *ngFor="let r of roles" [value]="r.value">{{ r.label }}</mat-option>
+          </mat-select>
+          <mat-icon matSuffix>badge</mat-icon>
+        </mat-form-field>
+
+        <div class="form-row">
+          <mat-checkbox formControlName="remember">Se souvenir de moi</mat-checkbox>
+          <a class="forgot-link" href="#">Mot de passe oublié ?</a>
+        </div>
+
+        <button
+          mat-flat-button
+          color="primary"
+          type="submit"
+          class="full submit-btn"
+          [disabled]="isLoading()"
+        >
+          <mat-progress-spinner *ngIf="isLoading()" diameter="18" mode="indeterminate" />
+          <span>{{ isLoading() ? 'Connexion en cours…' : 'Se connecter' }}</span>
+        </button>
+
+      </form>
+
+      <p class="form-footer">
+        Vous n'avez pas de compte ? <a href="#">Demander un accès</a>
+      </p>
+    </div>
+
+  </div>
 </div>

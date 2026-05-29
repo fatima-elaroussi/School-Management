@@ -39,7 +39,7 @@ export class SidebarComponent implements OnDestroy {
   private bpSub?: Subscription;
 
   readonly navItems: NavItem[] = [
-    { label: 'Dashboard',        icon: 'dashboard',              route: '/dashboard',         exact: true },
+    { label: 'Tableau de bord',   icon: 'dashboard',              route: '/dashboard',         exact: true },
     { label: 'Étudiants',        icon: 'groups',                 route: '/students' },
     { label: 'Professeurs',      icon: 'person',                 route: '/teachers' },
     { label: 'Groupes',          icon: 'view_list',              route: '/groups' },

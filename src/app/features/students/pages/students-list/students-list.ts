@@ -88,9 +88,9 @@ export class StudentsList {
   }
 
   readonly paymentOptions: PaymentOption[] = [
-    { value: 'all', label: 'All payments' },
-    { value: 'payé', label: 'Paid' },
-    { value: 'en retard', label: 'Late' },
+    { value: 'all', label: 'Tous les statuts' },
+    { value: 'payé', label: 'Payé' },
+    { value: 'en retard', label: 'En retard' },
   ];
 
   readonly displayedColumns = [
@@ -209,14 +209,23 @@ export class StudentsList {
     this.pageSize.set(event.pageSize);
   }
 
+  paymentChipClass(status: string): string {
+    const map: Record<string, string> = {
+      'payé':       'chip-paid',
+      'en attente': 'chip-pending',
+      'en retard':  'chip-late',
+    };
+    return map[status] ?? 'chip-pending';
+  }
+
   deleteStudent(student: Student): void {
     const dialogRef = this.dialog.open(ConfirmDialog, {
       width: '420px',
       data: {
-        title: 'Delete student',
-        message: `Are you sure you want to delete ${student.fullName}? This action cannot be undone.`,
-        confirmText: 'Delete',
-        cancelText: 'Cancel',
+        title: 'Supprimer l\'étudiant',
+        message: `Êtes-vous sûr de vouloir supprimer ${student.fullName} ? Cette action est irréversible.`,
+        confirmText: 'Supprimer',
+        cancelText: 'Annuler',
       },
     });
 
@@ -226,13 +235,11 @@ export class StudentsList {
       this.loading.set(true);
       this.studentsService.deleteStudent(student.id).subscribe({
         next: () => {
-          this.snackBar.open('Student deleted.', 'Close', { duration: 3000 });
+          this.snackBar.open('Étudiant supprimé.', 'Fermer', { duration: 3000 });
           this.loadStudents();
         },
         error: () => {
-          this.snackBar.open('Unable to delete student. Please try again.', 'Close', {
-            duration: 3000,
-          });
+          this.snackBar.open('Impossible de supprimer l\'étudiant.', 'Fermer', { duration: 3000 });
           this.loading.set(false);
         },
         complete: () => {

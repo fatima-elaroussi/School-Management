@@ -88,7 +88,7 @@ export class LoginComponent {
       const message =
         error instanceof Error && error.message
           ? error.message
-          : 'Unable to sign in. Please try again.';
+          : 'Identifiants incorrects. Veuillez réessayer.';
       this.errorMessage.set(message);
     } finally {
       this.isLoading.set(false);
